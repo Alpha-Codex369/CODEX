@@ -326,7 +326,8 @@ donotchange() {
     sed "s/SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
     sed "s/SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
     echo "$name" > "$USERNAME_FILE" &&
-    echo "version 1.5" > "$VERSION"  # Fixed version string
+    echo "" > "$VERSION"
+	echo "" > "$D1/ads.txt"
 
     # Check if all operations were successful
     if [[ $? -eq 0 ]]; then
