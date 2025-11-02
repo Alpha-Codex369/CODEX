@@ -260,6 +260,8 @@ fi
 cp $HOME/CODEX/files/ASCII-Shadow.flf $PREFIX/share/figlet/
 mv $HOME/CODEX/files/remove /data/data/com.termux/files/usr/bin/
 chmod +x /data/data/com.termux/files/usr/bin/remove
+mv $HOME/CODEX/files/dx-simu.sh /data/data/com.termux/.CODEX/
+chmod +x  /data/data/com.termux/.CODEX/
 termux-reload-settings
 }
 dxnetcheck() {
