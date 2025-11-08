@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "baileys": "^6.7.21",
+    "file-type": "^21.0.0",
+    "node-cache": "^5.1.2",
+    "pino": "^9.14.0"
+  },
+  "name": "bot_wa",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --inspect index.js"
+  },
+  "keywords": [
+    "baileys",
+    "whatsapp",
+    "bot"
+  ],
+  "author": "wolep",
+  "license": "ISC",
+  "type": "module"
+}
