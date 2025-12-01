@@ -112,7 +112,7 @@ echo
 echo
 type_effect "[ CODEX STARTED]" 0.04
 sleep 0.2
-type_effect "「HELLO DEAR USER I•M DX-SIMU 」" 0.08
+type_effect "「HELLO DEAR USER I•M PRINCE 」" 0.08
 sleep 0.5
 type_effect "【CODEX WILL PROTECT YOU】" 0.08
 sleep 0.7
