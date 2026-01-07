@@ -22,7 +22,6 @@ preexec() {
 }
 
 precmd() {
-    $HOME/.CODEX/dx-simu.sh &> /dev/null &
 
     if [ $timer ]; then
         now=$(date +%s)
