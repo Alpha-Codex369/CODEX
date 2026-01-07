@@ -187,7 +187,7 @@ for ((i=1; i<=8; i++)); do
 done
 echo "╚${var2}╝"
 PUT 4 0
-figlet -c -f ASCII-Shadow -w $width SIMU | lolcat
+figlet -c -f ASCII-Shadow -w $width D1D4X | lolcat
 PUT 3 0
 echo -e "\033[36;1m"
 for ((i=1; i<=7; i++)); do
