@@ -325,8 +325,8 @@ donotchange() {
     TEMP_FILE="$HOME/temp.zshrc"  # Actual temporary file
 
     # Use sed to replace SIMU with the name and save to temporary file
-    sed "s/SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
-    sed "s/SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
+    sed "s/D1D4X/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
+    sed "s/D1D4X/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
     echo "$name" > "$USERNAME_FILE" &&
     echo "" > "$VERSION"
 	echo "" > "$D1/ads.txt"
