@@ -8,6 +8,12 @@ source /data/data/com.termux/files/home/.oh-my-zsh/plugins/zsh-syntax-highlighti
 alias ls='lsd'
 alias simu='gemini_run'
 alias rd='termux-reload-settings'
+alias chat='/data/data/com.termux/files/home/.toolx/chat'
+alias dev='/data/data/com.termux/files/home/.toolx/dev'
+alias report='/data/data/com.termux/files/home/.toolx/dev'
+alias update='/data/data/com.termux/files/home/.toolx/update'
+alias bname='/data/data/com.termux/files/home/.toolx/bname'
+alias help='/data/data/com.termux/files/home/.toolx/help'
 
 clear
 
@@ -78,7 +84,7 @@ banner
     sleep 1
 }
 
-CODEX="https://codex-server-6qr9.onrender.com"
+CODEX="https://codex-server-86mr.onrender.com"
 cd $HOME
 D1=".termux"
 VERSION="$D1/dx.txt"
@@ -101,27 +107,8 @@ echo -e "    ${c}░╚════╝░░╚════╝░╚════
 echo
 }
 
-check_network() {
-  if [ -d /sys/class/net/wlan0 ] && [ "$(cat /sys/class/net/wlan0/operstate)" = "up" ]; then
-    return 0
-  fi
-
-  if [ -d /sys/class/net/rmnet0 ] && [ "$(cat /sys/class/net/rmnet0/operstate)" = "up" ]; then
-    return 0
-  fi
-
-  if [ -d /sys/class/net/usb0 ] && [ "$(cat /sys/class/net/usb0/operstate)" = "up" ]; then
-    return 0
-  fi
-  if [ -d /sys/class/net/rndis0 ] && [ "$(cat /sys/class/net/rndis0/operstate)" = "up" ]; then
-    return 0
-  fi
-
-  return 1
-}
 
 udp() {
-    if check_network; then
         messages=$(curl -s "$CODEX/check_version" | jq -r --arg vs "$version" '.[] | select(.message == $vs) | .message')
 
         if [ -n "$messages" ]; then
@@ -133,12 +120,8 @@ udp() {
             cd CODEX
             bash install.sh
         else
-            clear
-            banner
-        fi
-    else
-        :
-    fi
+        clear
+          fi
 }
 
 load() {
