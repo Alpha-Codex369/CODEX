@@ -48,7 +48,7 @@ clear
     rm -rf CODEX
     exit 0
 }
-if command -v ncurses-utils -y &>/dev/null; then
+if command -v ncurses-utils &>/dev/null; then
     echo ""
 else
     pkg install ncurses-utils -y >/dev/null 2>&1
