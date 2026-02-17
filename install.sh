@@ -48,7 +48,11 @@ clear
     rm -rf CODEX
     exit 0
 }
-
+if command -v ncurses-utils -y &>/dev/null; then
+    echo ""
+else
+    pkg install ncurses-utils -y >/dev/null 2>&1
+fi
 trap exit_script SIGINT SIGTSTP
 check_disk_usage() {
     local threshold=${1:-$THRESHOLD}  # Use passed argument or default to THRESHOLD
@@ -134,11 +138,7 @@ if command -v curl &>/dev/null; then
 else
     pkg install curl -y &>/dev/null 2>&1
 fi
-if command -v ncurses-utils -y &>/dev/null; then
-    echo ""
-else
-    pkg install ncurses-utils -y >/dev/null 2>&1
-fi
+
 }
 help() {
 clear
