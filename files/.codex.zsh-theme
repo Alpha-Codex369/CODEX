@@ -48,17 +48,17 @@ command_not_found_handler() {
     fi
 
         echo "$output" | sed -E \
-        -e "s/([Cc]ommand)/${c_green}\1${c_reset}/g" \
-        -e "s/\b([Ii]n)\b/${c_green}\1${c_reset}/g" \
-        -e "s/\b([Pp]kg)\b/${c_blue}\1${c_reset}/g" \
-        -e "s/\b([Ii]nstall)\b/${c_yellow}\1${c_reset}/g" \
-        -e "s/\b([Ii]nstalled)\b/${c_yellow}\1${c_reset}/g" \
-        -e "s/\b([Ff]ound)\b/${c_red}\1${c_reset}/g" \
-        -e "s/\b([Ss]udo)\b/${c_pink}\1${c_reset}/g" \
-        -e "s/\b([Pp]rogram)\b/${c_green}\1${c_reset}/g" \
-        -e "s/\b([Pp]ackage)\b/${c_cyan}\1${c_reset}/g" \
-        -e "s/([0-9]+)/${c_pink}\1${c_reset}/g" >&2
-    return 127
+    -e "s/\b([Cc]ommand)\b/${c_green}\1${c_reset}/g" \
+    -e "s/\b([Ii]n)\b/${c_green}\1${c_reset}/g" \
+    -e "s/\b([Pp]kg)\b/${c_blue}\1${c_reset}/g" \
+    -e "s/\b([Ii]nstall)\b/${c_yellow}\1${c_reset}/g" \
+    -e "s/\b([Ii]nstalled)\b/${c_yellow}\1${c_reset}/g" \
+    -e "s/\b([Ff]ound)\b/${c_red}\1${c_reset}/g" \
+    -e "s/\b([Ss]udo)\b/${c_pink}\1${c_reset}/g" \
+    -e "s/\b([Pp]rogram)\b/${c_green}\1${c_reset}/g" \
+    -e "s/\b([Pp]ackage)\b/${c_cyan}\1${c_reset}/g" \
+    -e "s/\b([0-9]+)\b/${c_pink}\1${c_reset}/g" >&2
+return 127
 }
 exit() {
     if [[ "$1" == "x" ]]; then
