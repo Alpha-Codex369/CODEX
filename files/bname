@@ -28,7 +28,7 @@ fi
 CURRENT_NAME=$(cat "$USER_FILE")
 
 echo
-echo -e " ${c}              (\_/)"
+echo -e " ${c}             (\_/)"
 echo -e "              (${y}^_^${c})     ${g}Hey dear${c}"
 echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
 echo
