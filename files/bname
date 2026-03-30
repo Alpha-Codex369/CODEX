@@ -36,35 +36,47 @@ echo -e " [+] ${c}Current Banner Name: ${g}$CURRENT_NAME${n}"
 echo
 
 while true; do
-    read -p "$(echo -e ${c} [+] ──[Enter New Name]────► ${n})" new_name
+    read -p "$(echo -e ${g}[${n}+${g}]──[${n}Enter New Name${g}]────►${n} )" name
     echo
+        
+        if [[ -z "$name" ]]; then
+            echo -e " ${E} ${r}Name cannot be empty!${c}"
+            echo
+            continue
+        fi
 
-    if [[ ! "$new_name" =~ ^[a-zA-Z\ ]+$ ]]; then
-        echo -e " ${r}[×] Invalid Input! Use English letters & spaces only.${n}"
-        continue
-    fi
+       
+        if [[ ! "$name" =~ ^[a-zA-Z0-9[:space:]-]+$ ]]; then
+            echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use letters, numbers, hyphens & spaces only.${c}"
+            echo
+            continue
+        fi
 
-    new_name=$(echo "$new_name" | tr '[:lower:]' '[:upper:]' | tr ' ' '-')
+        name="${name^^}"
+        name="${name// /-}"
 
-    if [[ ${#new_name} -ge 1 && ${#new_name} -le 8 ]]; then
-        break
-    else
-        echo -e " ${r}[×] Name must be between 1 and 8 characters.${n}"
-    fi
-done
+ 
+        len=${#name}
+        if [[ $len -ge 1 && $len -le 8 ]]; then
+            break
+        else
+            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}$len${c}"
+            echo
+        fi
+    done
 
 # Replace the name in config files
 if [ -f "$ZSHRC" ]; then
-    sed -i "s/$CURRENT_NAME/$new_name/g" "$ZSHRC"
+    sed -i "s/$CURRENT_NAME/$name/g" "$ZSHRC"
 fi
 
 if [ -f "$THEME" ]; then
-    sed -i "s/$CURRENT_NAME/$new_name/g" "$THEME"
+    sed -i "s/$CURRENT_NAME/$name/g" "$THEME"
 fi
 
 # Update the record
-echo "$new_name" > "$USER_FILE"
+echo "$name" > "$USER_FILE"
 
-echo -e " ${g}[+] Banner name successfully changed to: $new_name${n}"
-echo -e " ${y}[!] Type 'zsh' or restart your terminal to see the changes.${n}"
+echo -e " ${g}[+] Banner name successfully changed to: $name${n}"
+echo -e " ${y}[!] Type 'clear' or restart your terminal to see the changes.${n}"
 echo
