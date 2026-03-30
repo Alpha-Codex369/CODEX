@@ -244,8 +244,10 @@ spin() {
     rm -rf /data/data/com.termux/files/usr/bin/chat >/dev/null 2>&1
 
     if [ ! -f "$HOME/.toolx/chat" ]; then
-        (mv $HOME/CODEX/files/chat.sh $HOME/.toolx/chat && chmod +x $HOME/.toolx/chat) &
+        mkdir -p "$HOME/.toolx"
+        mv "$HOME/CODEX/files/chat.sh" "$HOME/.toolx/chat" &
         show_spinner "chat"
+        chmod +x "$HOME/.toolx/chat"
     fi
     
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -313,11 +315,12 @@ linux_spin() {
         sudo pip3 install lolcat --break-system-packages >/dev/null 2>&1 || pip3 install lolcat >/dev/null 2>&1 &
         show_spinner "lolcat(pip)"
     fi
-    
+
     if [ ! -f "$HOME/.toolx/chat" ]; then
         mkdir -p "$HOME/.toolx"
-        (cp $HOME/CODEX/files/chat.sh $HOME/.toolx/chat && chmod +x $HOME/.toolx/chat) &
+        mv "$HOME/CODEX/files/chat.sh" "$HOME/.toolx/chat" &
         show_spinner "chat"
+        chmod +x "$HOME/.toolx/chat"
     fi
     
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -423,6 +426,7 @@ dxnetcheck() {
 }
 
 donotchange() {
+donotchange() {
     clear
     echo
     echo
@@ -437,18 +441,20 @@ donotchange() {
     while true; do
         read -p "$(echo -e ${c}${A}──[Enter Your Name]────► ${n})" name
         echo
-        if [[ ! "$name" =~ ^[a-zA-Z\ ]+$ ]]; then
-            echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use English letters & spaces only.${c}"
+        
+        # Added support for hyphens (-) and numbers (0-9)
+        if [[ ! "$name" =~ ^[a-zA-Z0-9\ -]+$ ]]; then
+            echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use letters, numbers, hyphens & spaces only.${c}"
             echo
             continue
         fi
-
         name=$(echo "$name" | tr '[:lower:]' '[:upper:]' | tr ' ' '-')
 
+        # Strict 8 character limit
         if [[ ${#name} -ge 1 && ${#name} -le 8 ]]; then
             break
         else
-            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters. ${y}Please try again.${c}"
+            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}${#name}${c}"
             echo
         fi
     done
