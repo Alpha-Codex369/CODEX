@@ -26,7 +26,7 @@ ask_continue() {
     echo -e " ${C} ${y}Do you want to restore the default terminal?${n}"
     echo -e " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${n}"
     echo
-    read -p "[+]──[Select Option]────► " choice
+    read -p "$(echo -e ${g}[${n}+${g}]──[${n}Select Option${g}]────►${n} )" choice
 
     choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
