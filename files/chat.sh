@@ -133,7 +133,7 @@ trap _cleanup EXIT INT TERM
 inter() {
     clear; echo
     echo -e "                ${g}╔════════════════╗"
-    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}    ║"
+    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}   ║"
     echo -e "                ${g}╚════════════════╝"
     echo -e "  ${g}╔════════════════════════════════════════════╗"
     echo -e "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
@@ -170,7 +170,7 @@ save_username() {
     mkdir -p "$USERNAME_DIR"
     sleep 0.8; clear; echo
     echo -e "		        ${g}Hey ${y}$username"
-    echo -e "${c}              (\_/)\n              (${y}^ω^${c})     ${g}I'm Dx-Simu${c}\n              ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅\n"
+    echo -e "${c}              (\_/)\n              (${y}^ω^${c})       ${g}I'm Dx-Simu${c}\n            ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅\n"
     echo -e " ${A} ${c}Your account created ${g}Successfully¡${c}"
     echo "$username" > "$USERNAME_FILE"
     echo; sleep 0.8
@@ -280,7 +280,7 @@ render_messages() {
     for (( i=start; i<end; i++ )); do
         tput cup "$row" 0; tput el
         
-        # 🛠️ FIXED: Splitting logic modified for better compatibility
+        # Splitting logic
         local line="${ALL_MSGS[$i]}"
         local msg_id=$(echo "$line" | cut -f1)
         local msg_ts=$(echo "$line" | cut -f2)
@@ -310,8 +310,6 @@ render_messages() {
         fi
         (( row++ ))
     done
-    # ... baki scroll logic thik thakbe
-
 
     while [[ $row -le $SCROLL_ROW ]]; do tput cup "$row" 0; tput el; (( row++ )); done
 
@@ -361,7 +359,7 @@ send_message() {
     MSG_OFFSET=0; AT_BOTTOM=1
     render_messages; render_input
 
-    # 🛠️ FIXED: JSON Escaping Issue solved using 'jq' to prevent chat crashes when using quotes.
+    # JSON Escaping Issue solved using 'jq' to prevent chat crashes when using quotes.
     local json_payload=$(jq -n -c --arg u "$username" --arg m "$msg" --arg t "$ts_ms" '{"username": $u, "message": $m, "timestamp": ($t | tonumber)}')
 
     curl -s --max-time 10 -X POST -H "Content-Type: application/json" \
