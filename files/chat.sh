@@ -1,308 +1,428 @@
 #!/bin/bash
-clear
-if ! command -v curl &> /dev/null; then
-    pkg install curl -y &> /dev/null
+
+
+if command -v jq &>/dev/null; then
+    echo ""
 else
-echo
+    if [ -d "/data/data/com.termux/files/usr/" ]; then
+        pkg install jq -y >/dev/null 2>&1
+    else
+        sudo apt install jq -y >/dev/null 2>&1 || true
+    fi
+    clear
 fi
-clear
+
+if command -v curl &>/dev/null; then
+    echo ""
+else
+    if [ -d "/data/data/com.termux/files/usr/" ]; then
+        pkg install curl -y >/dev/null 2>&1
+    else
+        sudo apt install curl -y >/dev/null 2>&1 || true
+    fi
+    clear
+fi
+
+if command -v coreutils &>/dev/null; then
+    echo ""
+else
+    if [ -d "/data/data/com.termux/files/usr/" ]; then
+        pkg install coreutils -y >/dev/null 2>&1
+    else
+        sudo apt install coreutils -y >/dev/null 2>&1 || true
+    fi
+    clear
+fi
+
+if command -v tput &>/dev/null; then
+    echo ""
+else
+    if [ -d "/data/data/com.termux/files/usr/" ]; then
+        pkg install ncurses-utils -y >/dev/null 2>&1
+    else
+        sudo apt install ncurses-bin -y >/dev/null 2>&1 || true
+    fi
+    clear
+fi
+
 r='\033[1;91m'
 p='\033[1;95m'
 y='\033[1;93m'
 g='\033[1;92m'
-n='\033[1;0m'
+n='\033[0m'
 b='\033[1;94m'
 c='\033[1;96m'
+w='\033[1;97m'
+dim='\033[2m'
+bld='\033[1m'
 
-# dx Symbol
 X='\033[1;92m[\033[1;00m⎯꯭̽𓆩\033[1;92m]\033[1;96m'
-D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
+DX='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
 E='\033[1;92m[\033[1;00m×\033[1;92m]\033[1;91m'
 A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
-C='\033[1;92m[\033[1;00m</>\033[1;92m]\033[92m'
+CC='\033[1;92m[\033[1;00m</>\033[1;92m]\033[92m'
 lm='\033[1;96m▱▱▱▱▱▱\033[1;0m〄\033[1;96m▱▱▱▱▱▱\033[1;00m'
-dm='\033[1;93m▱▱▱▱▱▱\033[1;0m〄\033[1;93m▱▱▱▱▱▱\033[1;00m'
 
-
-URL="https://codex-server-86mr.onrender.com"
-USERNAME_DIR="$HOME/.CODEX"
+URL="https://codex-server-sooty.vercel.app"
+mkdir -p tmp
+USERNAME_DIR="$HOME/.DX"
 USERNAME_FILE="$USERNAME_DIR/usernames.txt"
+
+MSG_FILE="tmp/.cx_msg_$$"
+WARN_FILE="tmp/.cx_warn_$$"
+ADS_FILE="tmp/.cx_ads_$$"
+
+MSG_OFFSET=0
+AT_BOTTOM=1
+INPUT_BUF=""
+ALL_MSGS=()
+MSGS_TOTAL=0
+LAST_MTIME=0
+FETCH_PID=""
+META_PID=""
+OLD_STTY=""
+WARN_TEXT=""
+ADS_ARRAY=()
+TERM_ROWS=0
+TERM_COLS=0
+HEADER_ROWS=7
+MSG_START_ROW=7
+MSG_AREA=10
+SCROLL_ROW=0
+SEP_ROW=0
+INPUT_ROW=0
+HINT_ROW=0
 random_number=$(( RANDOM % 2 ))
 
-inter() {
-clear
-echo
-echo -e "               ${g}╔═══════════════╗"
-echo -e "               ${g}║ ${n}</>  ${c}DARK-X${g}   ║"
-echo -e "               ${g}╚═══════════════╝"
-echo -e "  ${g}╔════════════════════════════════════════════╗"
-echo -e "  ${g}║  ${C} ${y}Checking Your Internet Connection¡${g}  ║"
-echo -e "  ${g}╚════════════════════════════════════════════╝${n}"
-while true; do
-    curl --silent --head --fail https://github.com > /dev/null
-    if [ "$?" != 0 ]; then
-echo -e "              ${g}╔══════════════════╗"
-echo -e "              ${g}║${C} ${r}No Internet ${g}║"
-echo -e "              ${g}╚══════════════════╝"
-        sleep 2.5
-    else
-        break
-    fi
-done
-clear
-}
-
-load() {
-clear
-echo -e " ${r}●${n}"
-sleep 0.2
-clear
-echo -e " ${r}●${y}●${n}"
-sleep 0.2
-clear
-echo -e " ${r}●${y}●${b}●${n}"
-sleep 0.2
-}
-
-# Function to display warnings
-check_warnings() {
-    warning=$(curl -s "$URL/warnings" | jq -r --arg user "$username" '.[] | select(.username == $user) | "Are You Warned — °|\(.username)|°  \(.warning)"')
-    if [ -n "$warning" ]; then
-        echo -e "         ${r}$warning${n}"
-    else
-    cd
-    fi
-}
-
-
 broken() {
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   ˖<💌>."
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   𖥔˖<💘>.𖥔"
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   .𖥔 ˖<💘>.𖥔 ݁"
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   𖥔 ݁ ˖<💛>.𖥔 ݁ "
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   .𖥔 ݁ ˖<💗>.𖥔 ݁ ˖"
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}        _(\___/)"
-echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=   ₊ଳ ‧₊˚ ⋅.𖥔 ݁ ˖<💔>.𖥔 ݁ ˖⋅˚₊‧ ଳ₊"
-echo -e "      // ͡     )︵)"
-echo -e "     (⁠人_____づ_づ"
-echo
-sleep 0.5
-echo -e " ${C} ${g}Goodbye! ${y}(${c}-${r}.${c}-${y})${c}Zzz・・・・𑁍ࠬܓ"
-echo
-exit 0
+    clear; echo
+    echo -e "${c}        _(\___/)"
+    echo -e "      =( ´ ${g}•⁠${p}ω${g}• ⁠${c})=  ₊ଳ ‧₊˚ ⋅.𖥔 ݁ ˖<💔>.𖥔 ݁ ˖⋅˚₊‧ ଳ₊"
+    echo -e "      // ͡     )︵)"
+    echo -e "     (⁠人_____づ_づ\n"
+    sleep 0.4
+    echo -e " ${CC} ${g}Goodbye! ${y}(${c}-${r}.${c}-${y})${c}Zzz・・・・𑁍ࠬܓ\n"
 }
 
 goodbye() {
-clear
-echo
-echo -e "${c}     ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔       ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)⼃"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}      ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔      ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)ノ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}     ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔       ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)⼃"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}     ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔       ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)ノ"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}      ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔      ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)⼃"
-echo
-sleep 0.5
-clear
-echo
-echo -e "${c}      ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔      ╱|、"
-echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
-echo -e "                       |、~〵"
-echo -e "                       じしˍ,)ノ"
-echo
-sleep 0.5
-echo -e " ${C} ${g}Goodbye! ${y}(${c}-${r}.${c}-${y})${c}Zzz・・・・ཐི|ཋྀ"
-echo
-exit 0
+    clear; echo
+    echo -e "${c}      ࿔‧ ֶָ֢˚˖𐦍˖˚ֶָ֢ ‧࿔      ╱|、"
+    echo -e "                      (${b}˚${p}ˎ ${b}。${c}7"
+    echo -e "                       |、~〵"
+    echo -e "                       じしˍ,)ノ\n"
+    sleep 0.4
+    echo -e " ${CC} ${g}Goodbye! ${y}(${c}-${r}.${c}-${y})${c}Zzz・・・・ཐི|ཋྀ\n"
 }
 
-dx() {
-clear
-echo
-echo -e " ${p}■ \e[4m${g}Use Tools\e[4m ${p}▪︎${n}"
-    echo
-echo -e " ${y}Enter ${g}q ${y}Exit Tool${n}"
-echo
-echo -e "             q"
-echo
-echo -e " ${b}■ \e[4m${c}If you understand, click the Enter Button\e[4m ${b}▪︎${n}"
-read -p ""
-}
+_cleanup() {
+    trap - EXIT INT TERM
+    [[ -n "$FETCH_PID" ]] && kill "$FETCH_PID" 2>/dev/null
+    [[ -n "$META_PID"  ]] && kill "$META_PID"  2>/dev/null
+    kill $(jobs -p) 2>/dev/null
 
-# Function to display messages
-display_messages() {
-    clear
-    banned=$(curl -s "$URL/ban" | jq -r --arg user "$username" '.[] | select(.username == $user) | "Are You banned — °|\(.username)|°  \(.bn_mesg)"')
-    if [ -n "$banned" ]; then
-     load
-echo -e "     ${c}____    __    ____  _  _     _  _ "
-echo -e "    ${c}(  _ \  /__\  (  _ \( )/ )___( \/ )"
-echo -e "    ${y} )(_) )/(__)\  )   / )  ((___))  ("
-echo -e "   ${y} (____/(__)(__)(_)\_)(_)\_)   (_/\_)\n"
-        echo -e "         ${r}$banned${n}"
-     echo
-     exit 0
-    else
-    cd
-    fi
-clear
-    load
+    [[ -n "$OLD_STTY" ]] && stty "$OLD_STTY" 2>/dev/null
+    tput cnorm  2>/dev/null
+    tput rmcup  2>/dev/null
+
+    rm -f "$MSG_FILE"* "$WARN_FILE"* "$ADS_FILE"*
+    if [[ $random_number -eq 0 ]]; then goodbye; else broken; fi
+    exit 0
+}
+trap _cleanup EXIT INT TERM
+
+inter() {
+    clear; echo
+    echo -e "                ${g}╔════════════════╗"
+    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}    ║"
+    echo -e "                ${g}╚════════════════╝"
+    echo -e "  ${g}╔════════════════════════════════════════════╗"
+    echo -e "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
+    echo -e "  ${g}╚════════════════════════════════════════════╝${n}"
+    local count=1
     while true; do
+        curl --silent --head --fail https://github.com >/dev/null
+        if [[ $? -ne 0 ]]; then
+            echo -ne "\r              ${g}╔══════════════════╗\n              ${g}║ ${g}[${n}$count${g}] ${r}No Internet  ${g}║\n              ${g}╚══════════════════╝\033[2A"
+            (( count++ )); sleep 2.5
+        else
+            echo -e "\n\n\n"; break
+        fi
+    done
     clear
-    echo -e " ${r}●${y}●${b}●${n}"
-    check_warnings
-        D=$(date +"${c}%Y-%b-%d${n}")
-        T=$(date +"${c}%I:%M %p${n}")
-        echo -e "${lm}"
-        echo -e " $D"
-        echo -e "  ${c}┏┓┓┏┏┓┏┳┓"
-        echo -e "  ${c}┃ ┣┫┣┫ ┃               ${C} ${g}t.me/Codex_369"
-        echo -e "  ${c}┗┛┛┗┛┗ ┻"
-        echo -e "  $T"
-        echo -e "${lm}"
+}
 
-        # Fetch and display messages
-        msg=$(curl -s "$URL/messages" | jq -r '.[] | "\(.username): \(.message)"')
-        echo -e "${g}$msg"
+load() {
+    clear; echo -e " ${r}●${n}"; sleep 0.12; clear; echo -e " ${r}●${y}●${n}"; sleep 0.12; clear; echo -e " ${r}●${y}●${b}●${n}"; sleep 0.12
+}
+
+save_username() {
+    clear; load
+    echo -e "        ${c}____    __    ____  _  _     _  _ "
+    echo -e "       ${c}(  _ \  /__\  (  _ \( )/ )___( \/ )"
+    echo -e "       ${y} )(_) )/(__)\  )   / )  ((___))  ("
+    echo -e "      ${y} (____/(__)(__)(_)\_)(_)\_)   (_/\_)\n\n"
+    echo -e " ${A} ${c}Enter Your Anonymous ${g}Username${c}\n"
+    read -p "[+]──[Enter Your Username]────► " username
+    if [[ -z "$username" ]]; then
+        echo -e "${r}Username cannot be empty!${n}"
+        sleep 1; save_username; return
+    fi
+    mkdir -p "$USERNAME_DIR"
+    sleep 0.8; clear; echo
+    echo -e "		        ${g}Hey ${y}$username"
+    echo -e "${c}              (\_/)\n              (${y}^ω^${c})     ${g}I'm Dx-Simu${c}\n              ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅\n"
+    echo -e " ${A} ${c}Your account created ${g}Successfully¡${c}"
+    echo "$username" > "$USERNAME_FILE"
+    echo; sleep 0.8
+    echo -e " ${DX} ${c}Enjoy Our Chat Tool¡\n"; read -p "[+]──[Enter to continue]────► "
+}
+
+check_ban() {
+    local resp=$(curl -s --max-time 8 "$URL/ban" 2>/dev/null)
+    local bn_msg=$(echo "$resp" | jq -r --arg u "$username" '.[] | select(.username == $u) | "Are You banned — °|\(.username)|°  \(.bn_mesg)"' 2>/dev/null)
+    if [[ -n "$bn_msg" ]]; then
+        load
+        echo -e "     ${c}____    __    ____  _  _     _  _ \n    ${c}(  _ \  /__\  (  _ \( )/ )___( \/ )\n    ${y} )(_) )/(__)\  )   / )  ((___))  (\n   ${y} (____/(__)(__)(_)\_)(_)\_)   (_/\_)\n"
+        echo -e "         ${r}$bn_msg${n}\n"; sleep 3; exit 1
+    fi
+}
+
+calc_layout() {
+    TERM_ROWS=$(tput lines)
+    TERM_COLS=$(tput cols)
+    HEADER_ROWS=7
+    local footer=4
+    MSG_START_ROW=$HEADER_ROWS
+    MSG_AREA=$(( TERM_ROWS - HEADER_ROWS - footer ))
+    [[ $MSG_AREA -lt 3 ]] && MSG_AREA=3
+    SCROLL_ROW=$(( MSG_START_ROW + MSG_AREA ))
+    SEP_ROW=$(( SCROLL_ROW + 1 ))
+    INPUT_ROW=$(( SEP_ROW + 1 ))
+    HINT_ROW=$(( INPUT_ROW + 1 ))
+}
+
+user_color() {
+    local u="$1"; local palette=("$r" "$g" "$y" "$b" "$p" "$c" "$w"); local h=0; local i
+    for (( i=0; i < ${#u} && i < 8; i++ )); do
+        local ch="${u:$i:1}"; local ord; printf -v ord '%d' "'$ch" 2>/dev/null || ord=0
+        h=$(( (h * 31 + ord) % 7 ))
+    done
+    echo "${palette[$h]}"
+}
+
+_fetch_loop() {
+    while true; do
+        local resp=$(curl -s --max-time 8 "$URL/messages" 2>/dev/null)
+        if [[ $? -eq 0 && -n "$resp" ]]; then
+            echo "$resp" > "${MSG_FILE}.tmp" && mv "${MSG_FILE}.tmp" "$MSG_FILE"
+        fi
+        sleep 1.5
+    done
+}
+
+_meta_loop() {
+    while true; do
+        local w=$(curl -s --max-time 6 "$URL/warnings" 2>/dev/null)
+        [[ $? -eq 0 && -n "$w" ]] && echo "$w" > "${WARN_FILE}.tmp" && mv "${WARN_FILE}.tmp" "$WARN_FILE"
+
+        local a=$(curl -s --max-time 6 "$URL/ads" 2>/dev/null | jq -r '.[].text' 2>/dev/null)
+        [[ $? -eq 0 && -n "$a" ]] && echo "$a" > "${ADS_FILE}.tmp" && mv "${ADS_FILE}.tmp" "$ADS_FILE"
+
+        sleep 15
+    done
+}
+
+load_messages() {
+    [[ ! -f "$MSG_FILE" ]] && return 1
+    local mtime=$(stat -c %Y "$MSG_FILE" 2>/dev/null || stat -f %m "$MSG_FILE" 2>/dev/null || echo 0)
+    [[ "$mtime" == "$LAST_MTIME" ]] && return 1
+    LAST_MTIME=$mtime
+    mapfile -t ALL_MSGS < <(jq -r '.messages[] | "\(.id)\t\(.timestamp)\t\(.username)\t\(.message)"' "$MSG_FILE" 2>/dev/null)
+    MSGS_TOTAL=${#ALL_MSGS[@]}
+    return 0
+}
+
+load_meta() {
+    if [[ -f "$WARN_FILE" ]]; then
+        WARN_TEXT=$(jq -r --arg u "$username" '.[] | select(.username == $u) | .warning' "$WARN_FILE" 2>/dev/null | head -1)
+    fi
+    if [[ -f "$ADS_FILE" ]]; then
+        mapfile -t ADS_ARRAY < "$ADS_FILE"
+    fi
+}
+
+render_header() {
+    local cur_date=$(date +"${c}%Y‑%b‑%d${n}")
+    local cur_time=$(date +"${c}%I:%M %p${n}")
+    tput cup 0 0; tput el; printf '%b' " ${r}●${y}●${b}●${n}  $cur_date  ${dim}│${n}  $cur_time"
+    tput cup 1 0; tput el; printf '%b' " $lm"
+    tput cup 2 0; tput el; printf '%b' "  ${c}┏┓┓┏┏┓┏┳┓"
+    tput cup 3 0; tput el; printf '%b' "  ${c}┃ ┣┫┣┫ ┃               ${CC} ${g}t.me/Codex_369"
+    tput cup 4 0; tput el; printf '%b' "  ${c}┗┛┛┗┛┗ ┻"
+    tput cup 5 0; tput el; printf '%b' " $lm"
+    tput cup 6 0; tput el
+    if [[ -n "$WARN_TEXT" ]]; then printf '%b' "  ${r}⚠ Warning: ${y}${WARN_TEXT}${n}"; fi
+}
+
+render_messages() {
+    local total=${#ALL_MSGS[@]}
+    local max_off=$(( total - MSG_AREA ))
+    [[ $max_off -lt 0 ]] && max_off=0
+    [[ $MSG_OFFSET -gt $max_off ]] && MSG_OFFSET=$max_off
+    [[ $MSG_OFFSET -lt 0 ]] && MSG_OFFSET=0
+
+    local end=$(( total - MSG_OFFSET ))
+    local start=$(( end - MSG_AREA ))
+    [[ $start -lt 0 ]] && start=0
+    [[ $end -gt $total ]] && end=$total
+
+    local row=$MSG_START_ROW
+    for (( i=start; i<end; i++ )); do
+        tput cup "$row" 0; tput el
         
-        # Fetch and display ads
-        ads=$(curl -s "$URL/ads" | jq -r '.[]')
-        echo -e "${c}$ads${c}\n"
+        # 🛠️ FIXED: Splitting logic modified for better compatibility
+        local line="${ALL_MSGS[$i]}"
+        local msg_id=$(echo "$line" | cut -f1)
+        local msg_ts=$(echo "$line" | cut -f2)
+        local uname=$(echo "$line" | cut -f3)
+        local msg=$(echo "$line" | cut -f4)
+        
+        # fallback time logic
+        local msg_time="--"
+        if [[ -n "$msg_ts" && "$msg_ts" != "null" ]]; then
+            local ts_sec="${msg_ts:0:-3}" 
+            msg_time=$(date -d "@$ts_sec" +"%I:%M %p" 2>/dev/null || date -r "$ts_sec" +"%I:%M %p" 2>/dev/null || echo "00:00")
+        fi
+        
+        local time_str="[${msg_time}]"
+        local uc=$(user_color "$uname")
+        local max_msg=$(( TERM_COLS - ${#uname} - ${#time_str} - 8 ))
+        [[ ${#msg} -gt $max_msg ]] && msg="${msg:0:$((max_msg-1))}…"
 
-        # Function to send a message
-        read -p "[+]─[Enter Message | $username]──➤ " message
-        if [[ "$message" == $'q' ]]; then
-        echo
-    echo -e "\n ${E} ${r}Exiting..Tool..!\n"
-                    sleep 1
- if [ $random_number -eq 0 ]; then
-    goodbye
-else
-    broken
-fi
-    break
-       else
-            curl -s -X POST -H "Content-Type: application/json" -d "{\"username\":\" 〄 $username\", \"message\":\"$message\"}" "$URL/send" &> /dev/null
+        if [[ "$uname" == "$username" ]]; then
+            local visible_len=$(( ${#msg} + 3 + ${#uname} + 1 + ${#time_str} ))
+            local pad=$(( TERM_COLS - visible_len - 2 ))
+            [[ $pad -lt 0 ]] && pad=0
+            local spaces=$(printf '%*s' "$pad" '')
+            printf '%b' "${spaces}${g}${msg}${n} ${dim}│${n} ${uc}${uname}${n} ${dim}${time_str}${n}"
+        else
+            printf '%b' " ${dim}${time_str}${n} ${uc}${uname}${n} ${dim}│${n} ${g}${msg}${n}"
+        fi
+        (( row++ ))
+    done
+    # ... baki scroll logic thik thakbe
+
+
+    while [[ $row -le $SCROLL_ROW ]]; do tput cup "$row" 0; tput el; (( row++ )); done
+
+    tput cup "$SCROLL_ROW" 0; tput el
+    local older_txt="" newer_txt="" new_badge=""
+    [[ $start -gt 0 ]] && older_txt="${dim}↑ ${g}$start${dim} older${n}"
+    [[ $MSG_OFFSET -gt 0 ]] && newer_txt="${dim}↓ newer${n}"
+    [[ $MSG_OFFSET -gt 0 ]] && new_badge=" ${y}● NEW${n}"
+    printf '%b' " ${dim}${older_txt}${n}  ${c}【${n} ${w}${end}${dim}/${n}${w}${total}${c} 】${n}${new_badge}  ${newer_txt}"
+
+    tput cup "$SEP_ROW" 0; tput el
+    local sep_line=$(printf "${dim}%0.s─${n}" $(seq 1 $(( TERM_COLS ))))
+    printf '%b' "$sep_line"
+}
+
+render_input() {
+    tput cup "$INPUT_ROW" 0; tput el
+    local disp="$INPUT_BUF"
+    local max_vis=$(( TERM_COLS - 24 - ${#username} ))
+    [[ $max_vis -lt 5 ]] && max_vis=5
+    if [[ ${#disp} -gt $max_vis ]]; then disp="${dim}…${n}${disp: -$((max_vis-1))}"; fi
+    printf '%b' " ${A} ${c}[${g}${username}${c}]${dim}──➤${n} ${w}${disp}${b}▌${n}"
+
+    tput cup "$HINT_ROW" 0; tput el
+    if [[ ${#ADS_ARRAY[@]} -gt 0 ]]; then
+        # Cool Ad Rotation
+        local ad_idx=$(( (HEADER_TICK / 5) % ${#ADS_ARRAY[@]} ))
+        local at="${ADS_ARRAY[$ad_idx]}"
+        [[ ${#at} -gt $(( TERM_COLS - 4 )) ]] && at="${at:0:$((TERM_COLS-5))}…"
+        printf '%b' " ${p}✦ ${c}${at} ${p}✦${n}"
+    else
+        printf '%b' " ${dim}↑↓ scroll  PgUp/PgDn  q+Enter=quit  Enter=send${n}"
+    fi
+}
+
+full_render() {
+    calc_layout; tput clear; render_header; render_messages; render_input
+}
+
+send_message() {
+    local msg="$1"
+    [[ -z "$msg" ]] && return
+    
+    local ts_ms=$(date +%s000)
+    ALL_MSGS+=("0\t${ts_ms}\t${username}\t${msg}")
+    MSGS_TOTAL=${#ALL_MSGS[@]}
+    MSG_OFFSET=0; AT_BOTTOM=1
+    render_messages; render_input
+
+    # 🛠️ FIXED: JSON Escaping Issue solved using 'jq' to prevent chat crashes when using quotes.
+    local json_payload=$(jq -n -c --arg u "$username" --arg m "$msg" --arg t "$ts_ms" '{"username": $u, "message": $m, "timestamp": ($t | tonumber)}')
+
+    curl -s --max-time 10 -X POST -H "Content-Type: application/json" \
+        -d "$json_payload" \
+        "$URL/send" >/dev/null 2>&1 &
+}
+
+scroll_up() { local max=$(( MSGS_TOTAL - MSG_AREA )); [[ $max -lt 0 ]] && max=0; (( MSG_OFFSET++ )); [[ $MSG_OFFSET -gt $max ]] && MSG_OFFSET=$max; AT_BOTTOM=0; }
+scroll_down() { (( MSG_OFFSET-- )); [[ $MSG_OFFSET -lt 0 ]] && MSG_OFFSET=0; [[ $MSG_OFFSET -eq 0 ]] && AT_BOTTOM=1; }
+scroll_page_up() { local i; for (( i=0; i<MSG_AREA; i++ )); do scroll_up; done }
+scroll_page_down() { local i; for (( i=0; i<MSG_AREA; i++ )); do scroll_down; done }
+
+HEADER_TICK=0
+
+main_chat() {
+    OLD_STTY=$(stty -g)
+    calc_layout; tput smcup; tput civis; stty -echo -icanon min 0 time 0
+
+    _fetch_loop & FETCH_PID=$!
+    _meta_loop & META_PID=$!
+
+    sleep 1.2; load_messages; load_meta; full_render
+
+    local META_TICK=0
+    while true; do
+        local ch="" seq=""
+        IFS= read -r -s -N 1 -t 0.15 ch
+        local rs=$?
+
+        if [[ $rs -eq 0 ]]; then
+            if [[ "$ch" == $'\x1b' ]]; then
+                IFS= read -r -s -N 2 -t 0.05 seq 2>/dev/null
+                case "$seq" in
+                    '[A') scroll_up; render_messages; render_input ;;
+                    '[B') scroll_down; render_messages; render_input ;;
+                    '[5') scroll_page_up; render_messages; render_input ;;
+                    '[6') scroll_page_down; render_messages; render_input ;;
+                    '[H') MSG_OFFSET=$(( MSGS_TOTAL - MSG_AREA )); [[ $MSG_OFFSET -lt 0 ]] && MSG_OFFSET=0; AT_BOTTOM=0; render_messages; render_input ;;
+                    '[F') MSG_OFFSET=0; AT_BOTTOM=1; render_messages; render_input ;;
+                esac
+            elif [[ "$ch" == $'\x7f' || "$ch" == $'\b' ]]; then
+                if [[ -n "$INPUT_BUF" ]]; then INPUT_BUF="${INPUT_BUF%?}"; render_input; fi
+            elif [[ "$ch" == $'\x15' ]]; then
+                INPUT_BUF=""; render_input
+            elif [[ "$ch" == $'\r' || "$ch" == $'\n' ]]; then
+                if [[ "$INPUT_BUF" == "q" ]]; then exit 0
+                elif [[ -n "$INPUT_BUF" ]]; then send_message "$INPUT_BUF"; INPUT_BUF=""; fi
+                render_input
+            elif [[ "$ch" == $'\x03' ]]; then exit 0
+            else INPUT_BUF+="$ch"; render_input; fi
+        else
+            if load_messages; then [[ $AT_BOTTOM -eq 1 ]] && MSG_OFFSET=0; render_messages; render_input; fi
+            (( META_TICK++ ))
+            if (( META_TICK >= 20 )); then META_TICK=0; load_meta; fi
+            (( HEADER_TICK++ ))
+            if (( HEADER_TICK >= 10 )); then HEADER_TICK=0; render_header; render_input; fi # Faster ad rotation
         fi
     done
 }
 
 mkdir -p "$USERNAME_DIR"
-
-save_username() {
-    clear
-    load
-echo -e "        ${c}____    __    ____  _  _     _  _ "
-echo -e "       ${c}(  _ \  /__\  (  _ \( )/ )___( \/ )"
-echo -e "       ${y} )(_) )/(__)\  )   / )  ((___))  ("
-echo -e "      ${y} (____/(__)(__)(_)\_)(_)\_)   (_/\_)\n\n"
-    echo -e " ${A} ${c}Enter Your Anonymous ${g}Username${c}"
-    echo
-    read -p "[+]──[Enter Your Username]────► " username
-
-    # Validate username
-    if [[ -z "$username" ]]; then
-        echo -e "${r}Username cannot be empty!${n}"
-        save_username
-        return
-    fi
-
-    sleep 1
-    clear
-    echo
-    echo -e "		        ${g}Hey ${y}$username"
-    echo -e "${c}              (\_/)"
-    echo -e "              (${y}^ω^${c})     ${g}I'm Dx-Simu${c}"
-    echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
-    echo
-    echo -e " ${A} ${c}Your account created ${g}Successfully¡${c}"
-    
-    # Save the username
-    echo "$username" > "$USERNAME_FILE"
-    echo
-    sleep 1
-    echo -e " ${D} ${c}Enjoy Our Chat Tool¡"
-    echo
-    read -p "[+]──[Enter to back]────► "
-    dx
-    display_messages
-}
-
-# Load username if exists
-if [ -f "$USERNAME_FILE" ]; then
-    username=$(cat "$USERNAME_FILE")
-else
-    save_username
-    username=$(cat "$USERNAME_FILE")
-fi
-
-# Start displaying messages
-inter
-display_messages
+if [[ ! -f "$USERNAME_FILE" ]]; then save_username; fi
+username=$(cat "$USERNAME_FILE")
+inter; check_ban; main_chat
