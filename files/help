@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+
+# Colors
+r='\033[1;91m'
+p='\033[1;95m'
+y='\033[1;93m'
+g='\033[1;92m'
+n='\033[0m'
+b='\033[1;94m'
+c='\033[1;96m'
+
+# Symbols
+X='\033[1;92m[\033[1;00m⎯꯭̽𓆩\033[1;92m]\033[1;96m'
+D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
+E='\033[1;92m[\033[1;00m×\033[1;92m]\033[1;91m'
+A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
+C='\033[1;92m[\033[1;00m</>\033[1;32m]\033[1;92m'
+
+# Icons
+aHELL="\uf489"
+USER="\uf007"
+
+# Username Fetch Logic
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    DIR="$HOME/.termux"
+else
+    DIR="$HOME/.CODEX"
+fi
+
+USERNAME_FILE="$DIR/usernames.txt"
+
+if [ -f "$USERNAME_FILE" ]; then
+    username=$(cat "$USERNAME_FILE")
+fi
+
+random_number=$(( RANDOM % 2 ))
+
+# Exit Trap Function
+exit_script() {
+    echo
+    echo -e "${c}              (\_/)"
+    echo -e "              (${y}^_^${c})     ${A} ${g}Hey dear${c}"
+    echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
+    echo
+    echo -e " ${A} ${c}Exiting ${g}help menu \033[1;36m"
+    echo
+    exit 0
+}
+
+trap exit_script SIGINT SIGTSTP
+
+# Cross-Platform Device Detection (Termux & Linux)
+if command -v getprop &> /dev/null; then
+    MODEL=$(getprop ro.product.model)
+    VENDOR=$(getprop ro.product.manufacturer)
+else
+    MODEL=$(hostname)
+    VENDOR=$(uname -o)
+fi
+devicename="${VENDOR} ${MODEL}"
+
+# Disk Usage Function
+THRESHOLD=100
+check_disk_usage() {
+    local threshold=${1:-$THRESHOLD}
+    local total_size
+    local used_size
+    local disk_usage
+
+    total_size=$(df -h "$HOME" | awk 'NR==2 {print $2}')
+    used_size=$(df -h "$HOME" | awk 'NR==2 {print $3}')
+    disk_usage=$(df "$HOME" | awk 'NR==2 {print $5}' | sed 's/%//g')
+
+    if [ "$disk_usage" -ge "$threshold" ]; then
+        echo -e "${g}[${n}\uf0a0${g}] ${r}WARN: ${y}Disk Full ${g}${disk_usage}% ${c}| ${c}U${g}${used_size} ${c}of ${c}T${g}${total_size}"
+    else
+        echo -e "${y}Disk usage: ${g}${disk_usage}% ${c}| ${g}${used_size}"
+    fi
+}
+
+data=$(check_disk_usage)
+
+if [ $random_number -eq 0 ]; then
+    echo -e "\n\n              ${g}Hey ${y}$username"
+    echo -e "${c}         (\_/)"
+    echo -e "         (${y}^ω^${c})     ${g}I'm Dx-Simu${c}"
+    echo -e "        ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
+    echo
+    echo -e " ${A} ${c}All Command ${g}Codex Banner¡${c}"
+else
+    echo -e "\n\n   ${c}___  _  _       __  __  ___  ___  _  _"
+    echo -e "  ${c}(   \( \/ )___  / _)/  \(   \(  _)( \/ )"
+    echo -e "  ${n} ) ) ))  ((___)( (_( () )) ) )) _) )  ("
+    echo -e " ${y} (___/(_/\_)     \__)\__/(___/(___)(_/\_)"
+    echo
+    echo -e " ${A} ${c}All Command ${g}Codex Banner¡${c}"
+fi
+
+# Info Section
+echo -e "\n${b}╭══ ${g}〄 ${y}ᴄᴏᴅᴇx ${g}〄"
+echo -e "${b}┃❁ ${g}ᴄʀᴇᴀᴛᴏʀ: ${y}ᴅx-ᴄᴏᴅᴇx"
+echo -e "${b}┃❁ ${g}ᴅᴇᴠɪᴄᴇ: ${y}${devicename}"
+echo -e "${b}┃❁ ${g}ᴅɪꜱᴋ: ${y}${data}"
+echo -e "${b}╰┈➤ ${g}[${n}${USER}${g}] ${g}Hey ${y}${username}"
+echo
+echo -e "${b}╭═════════════════⊷"
+echo -e "${b}┃ ${g}[${n}\uf6c3${g}] ${y}ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅ"
+echo -e "${b}╰═════════════════⊷${n}"
+echo
+
+# Command/Alias List
+echo -e "${b}╭═════❂ ${g}${aHELL} ᴄᴏᴍᴍᴀɴᴅ ${b}❂═════⊷"
+echo -e "${b}┃ ${p}❏ ${g}help       ${p}[ᴄᴏᴅᴇx ʜᴇʟᴘ ᴍᴇɴᴜ]"
+echo -e "${b}┃ ${p}❏ ${g}bname      ${p}[ᴄʜᴀɴɢᴇ ʙᴀɴɴᴇʀ ɴᴀᴍᴇ]"
+echo -e "${b}┃ ${p}❏ ${g}unstall    ${p}[ᴜɴɪɴꜱᴛᴀʟʟ ꜱᴄʀɪᴘᴛ/ᴛᴏᴏʟꜱ]"
+echo -e "${b}┃ ${p}❏ ${g}chat       ${p}[ᴄᴏᴅᴇx ɢʟᴏʙᴀʟ ᴄʜᴀᴛ]"
+echo -e "${b}┃ ${p}❏ ${g}dev        ${p}[ʀᴇᴘᴏʀᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ]"
+echo -e "${b}┃ ${p}❏ ${g}report     ${p}[ʀᴇᴘᴏʀᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ]"
+echo -e "${b}┃ ${p}❏ ${g}update     ${p}[ᴜᴘᴅᴀᴛᴇ ᴄᴏᴅᴇx ʙᴀɴɴᴇʀ]"
+echo -e "${b}╰═══════════════════════⊷"
+echo
+echo -e "${b}╭═════❂ ${g}${aHELL} ᴍɪɴɪ ᴄᴏᴍᴍᴀɴᴅ ${b}❂═════⊷"
+echo -e "${b}┃ ${p}❏ ${g}ls       ${p}[ʟɪsᴛ ᴀʟʟ]"
+echo -e "${b}┃ ${p}❏ ${g}lt       ${p}[ʟɪsᴛ ᴅᴇғᴀᴜʟᴛ]"
+echo -e "${b}┃ ${p}❏ ${g}clear    ${p}[ᴄʟᴇᴀʀ sᴄʀᴇᴇɴ ʙᴀɴɴᴇʀ]"
+echo -e "${b}┃ ${p}❏ ${g}clear n  ${p}[ᴄʟᴇᴀʀ sᴄʀᴇᴇɴ ᴅᴇғᴀᴜʟᴛ]"
+echo -e "${b}┃ ${p}❏ ${g}exit     ${p}[ᴇxɪᴛ ᴅᴇғᴀᴜʟᴛ]"
+echo -e "${b}┃ ${p}❏ ${g}exit x   ${p}[ᴇxɪᴛ ᴀᴅᴠᴀɴᴄᴇ]"
+echo -e "${b}╰═══════════════════════⊷"
+
+
