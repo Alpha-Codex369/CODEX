@@ -1,0 +1,70 @@
+#!/bin/bash
+clear
+
+# --- dx colors ---
+r='\033[1;91m'
+g='\033[1;92m'
+y='\033[1;93m'
+c='\033[1;96m'
+n='\033[1;0m'
+
+# Check Platform
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    DIR="$HOME/.termux"
+else
+    DIR="$HOME/.CODEX"
+fi
+
+USER_FILE="$DIR/usernames.txt"
+ZSHRC="$HOME/.zshrc"
+THEME="$HOME/.oh-my-zsh/themes/codex.zsh-theme"
+
+# Check if file exists
+if [ ! -f "$USER_FILE" ]; then
+    echo -e "\n ${r}[×] Error: CODEX is not fully configured or usernames.txt is missing.${n}"
+    exit 1
+fi
+
+CURRENT_NAME=$(cat "$USER_FILE")
+
+echo
+echo -e " ${c}              (\_/)"
+echo -e "              (${y}^_^${c})     ${g}Hey dear${c}"
+echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
+echo
+echo -e " [+] ${c}Current Banner Name: ${g}$CURRENT_NAME${n}"
+echo
+
+while true; do
+    read -p "$(echo -e ${c} [+] ──[Enter New Name]────► ${n})" new_name
+    echo
+
+    if [[ ! "$new_name" =~ ^[a-zA-Z\ ]+$ ]]; then
+        echo -e " ${r}[×] Invalid Input! Use English letters & spaces only.${n}"
+        continue
+    fi
+
+    new_name=$(echo "$new_name" | tr '[:lower:]' '[:upper:]' | tr ' ' '-')
+
+    if [[ ${#new_name} -ge 1 && ${#new_name} -le 8 ]]; then
+        break
+    else
+        echo -e " ${r}[×] Name must be between 1 and 8 characters.${n}"
+    fi
+done
+
+# Replace the name in config files
+if [ -f "$ZSHRC" ]; then
+    sed -i "s/$CURRENT_NAME/$new_name/g" "$ZSHRC"
+fi
+
+if [ -f "$THEME" ]; then
+    sed -i "s/$CURRENT_NAME/$new_name/g" "$THEME"
+fi
+
+# Update the record
+echo "$new_name" > "$USER_FILE"
+
+echo -e " ${g}[+] Banner name successfully changed to: $new_name${n}"
+echo -e " ${y}[!] Type 'zsh' or restart your terminal to see the changes.${n}"
+echo
