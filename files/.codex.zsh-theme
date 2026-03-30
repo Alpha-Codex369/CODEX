@@ -19,14 +19,14 @@ command_not_found_handler() {
     local g="\033[1;92m"
     local c="\033[1;96m"
     local n="\033[0m"
-    
+
     echo
     echo -e "                     ${g}Headache...*${n}"
     echo -e "${c}              (\_/)${n}"
     echo -e "${c}              (${n}*—*${c})${n}"
     echo -e "${c}             ⊂(___)づ${n}"
     echo
-    
+
     local c_green=$'\033[1;92m'
     local c_blue=$'\033[1;94m'
     local c_red=$'\033[1;91m'
@@ -34,7 +34,7 @@ command_not_found_handler() {
     local c_reset=$'\033[0m'
     local c_pink=$'\033[1;95m'
     local c_yellow=$'\033[1;93m'
-    
+
     local output=""
 
     if [[ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]]; then
@@ -47,7 +47,8 @@ command_not_found_handler() {
         output="simu: command not found: $1"
     fi
 
-        echo "$output" | sed -E \
+echo "$output" | sed -E \
+    -e "s/\b([0-9]+)\b/${c_pink}\1${c_reset}/g" \
     -e "s/\b([Cc]ommand)\b/${c_green}\1${c_reset}/g" \
     -e "s/\b([Ii]n)\b/${c_green}\1${c_reset}/g" \
     -e "s/\b([Pp]kg)\b/${c_blue}\1${c_reset}/g" \
@@ -56,10 +57,11 @@ command_not_found_handler() {
     -e "s/\b([Ff]ound)\b/${c_red}\1${c_reset}/g" \
     -e "s/\b([Ss]udo)\b/${c_pink}\1${c_reset}/g" \
     -e "s/\b([Pp]rogram)\b/${c_green}\1${c_reset}/g" \
-    -e "s/\b([Pp]ackage)\b/${c_cyan}\1${c_reset}/g" \
-    -e "s/\b([0-9]+)\b/${c_pink}\1${c_reset}/g" >&2
+    -e "s/\b([Pp]ackage)\b/${c_cyan}\1${c_reset}/g" >&2
+    
 return 127
 }
+
 exit() {
     if [[ "$1" == "x" ]]; then
         local g="\033[32m"
