@@ -1,0 +1,112 @@
+r='\033[91m'
+p='\033[1;95m'
+y='\033[93m'
+g='\033[92m'
+n='\033[0m'
+b='\033[94m'
+c='\033[96m'
+
+X='\033[1;92m[\033[1;00m⎯꯭̽𓆩\033[1;92m]\033[1;96m'
+D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
+E='\033[1;92m[\033[1;00m×\033[1;92m]\033[1;91m'
+A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
+C='\033[1;92m[\033[1;00m</>\033[1;32m]\033[1;92m'
+HOST="\uf6c3"
+
+ask() {
+echo
+echo -e "		       ${g}Cute-Simu...♡"
+echo -e "${c}              (\_/)"
+echo -e "              (${p}♡ω♡${c})"
+echo -e "             ⊂(___)づ ᯓᡣ𐭩"
+echo
+    echo -e " ${C} ${y}Do you want to Update Codex banner?${n}"
+    echo -e " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${c}"
+    echo
+    read -p "[+]──[Select Option]────► " choice
+
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
+
+    if [[ "$choice" == "y" || "$choice" == "yes" ]]; then
+        echo -e "\n ${A} ${c}Process confirmed! Starting removal...${n}"
+        sleep 1.5
+        clear
+    else
+        echo -e "\n ${E} ${r}Process cancelled by user.${n}"
+        echo -e " ${C} ${y}Exiting... ${g}[${n}${HOST}${g}]${n}"
+        echo
+        exit 1
+    fi
+}
+dxnetcheck() {
+    clear
+    echo
+    echo -e "		                 ${g}Uhu"
+    echo -e "${c}                        (\_/)"
+    echo -e "                        (${y}^_^${c})"
+    echo -e "                       ⊂(___)づ"
+    echo
+    echo -e "                ${g}╔════════════════╗"
+    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}   ║"
+    echo -e "                ${g}╚════════════════╝"
+    echo -e "  ${g}╔════════════════════════════════════════════╗"
+    echo -e "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
+    echo -e "  ${g}╚════════════════════════════════════════════╝${n}"
+    while true; do
+        curl --silent --head --fail https://github.com > /dev/null
+        if [ "$?" != 0 ]; then
+            echo -e "              ${g}╔══════════════════╗"
+            echo -e "              ${g}║${C} ${r}No Internet ${g}║"
+            echo -e "              ${g}╚══════════════════╝"
+            sleep 2.5
+        else
+            break
+        fi
+    done
+    clear
+}
+
+banner() {
+echo
+echo -e "    ${y}░█████╗░░█████╗░██████╗░███████╗██╗░░██╗"
+echo -e "    ${y}██╔══██╗██╔══██╗██╔══██╗██╔════╝╚██╗██╔╝"
+echo -e "    ${y}██║░░╚═╝██║░░██║██║░░██║█████╗░░░╚███╔╝░"
+echo -e "    ${c}██║░░██╗██║░░██║██║░░██║██╔══╝░░░██╔██╗░"
+echo -e "    ${c}╚█████╔╝╚█████╔╝██████╔╝███████╗██╔╝╚██╗"
+echo -e "    ${c}░╚════╝░░╚════╝░╚═════╝░╚══════╝╚═╝░░╚═╝${n}"
+echo
+}
+
+spin() {
+    banner
+    local pid=$!
+    local delay=0.40
+    local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
+
+    while ps -p $pid > /dev/null 2>&1; do
+        for i in "${spinner[@]}"; do
+            tput civis
+            echo -ne "\033[1;96m\r [+] Downloading..please wait.........\e[33m[\033[1;92m$i\033[1;93m]\033[1;0m   "
+            sleep $delay
+            printf "\b\b\b\b\b\b\b\b"
+        done
+    done
+    printf "   \b\b\b\b\b"
+    tput cnorm
+    printf "\e[1;93m [Done]\e[0m\n"
+    echo
+    sleep 1
+}
+                ask
+                dxnetcheck
+                banner
+                echo -e " ${A} ${c}Codex Updated"
+                sleep 3
+                cd "$HOME" || return
+                rm -rf CODEX
+                git clone https://github.com/Alpha-Codex369/CODEX.git >/dev/null 2>&1 &
+                spin
+                if [ -d "CODEX" ]; then
+                    cd CODEX || return
+                    bash install.sh
+                fi
