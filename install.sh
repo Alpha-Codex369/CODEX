@@ -185,22 +185,7 @@ tr() {
     fi
 }
 
-help() {
-    clear
-    echo
-    echo -e " ${p}■ \e[4m${g}Use Button\e[4m ${p}▪︎${n}"
-    echo
-    echo -e " ${y}Termux: Use Extra key Button${n}"
-    echo -e " ${y}Linux: Use Number Selection${n}"
-    echo
-    echo -e " UP          ↑"
-    echo -e " DOWN        ↓"
-    echo
-    echo -e " ${g}Select option Click Enter button"
-    echo
-    echo -e " ${b}■ \e[4m${c}If you understand, click the Enter Button\e[4m ${b}▪︎${n}"
-    read -p ""
-}
+
 
 spin() {
     echo
@@ -400,7 +385,7 @@ setup_linux_paths() {
 dxnetcheck() {
     clear
     echo
-    echo -e "		                 ${g}Uhu"
+    echo -e "		              ${g}Uhu"
     echo -e "${c}                        (\_/)"
     echo -e "                        (${y}^_^${c})"
     echo -e "                       ⊂(___)づ"
@@ -425,7 +410,6 @@ dxnetcheck() {
     clear
 }
 
-donotchange() {
 donotchange() {
     clear
     echo
@@ -501,7 +485,6 @@ donotchange() {
 }
 
 banner() {
-    help
     clear
     echo
     echo
@@ -535,6 +518,22 @@ banner() {
 setupx() {
     tr
     dxnetcheck
+    if [ -d "/data/data/com.termux/files/usr/" ]; then
+    clear
+    echo
+    echo -e " ${p}■ \e[4m${g}Use Button\e[4m ${p}▪︎${n}"
+    echo
+    echo -e " ${y}Termux: Use Extra key Button with move${n}"
+    echo
+    echo -e " UP          ↑"
+    echo -e " DOWN        ↓"
+    echo
+    echo -e " ${g}Select option Click Enter button"
+    echo
+    echo -e " ${b}■ \e[4m${c}If you understand, click the Enter Button\e[4m ${b}▪︎${n}"
+    read -p ""
+    clear
+        fi
     banner
     
     if [ -d "/data/data/com.termux/files/usr/" ]; then
