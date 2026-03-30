@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-mkdir-p $HOME/.CODEX
+mkdir -p $HOME/.CODEX
 mkdir -p $HOME/.Codex-simu
 mkdir -p $HOME/.toolx
 # dx color
@@ -113,7 +113,7 @@ start() {
         "「 CODEX WILL PROTECT YOU 」"
         "「 GOODBYE 」"
         "「 ENJOY OUR CODEX 」"
-        "「...............」"
+        "「............... 」"
     )
     for t in "${texts[@]}"; do
         TOTAL_CHARS=$((TOTAL_CHARS + ${#t}))
@@ -244,8 +244,7 @@ spin() {
     rm -rf /data/data/com.termux/files/usr/bin/chat >/dev/null 2>&1
 
     if [ ! -f "$HOME/.toolx/chat" ]; then
-        mv $HOME/CODEX/files/chat.sh $HOME/.toolx/chat &
-        chmod +x $HOME/.toolx/chat &
+        (mv $HOME/CODEX/files/chat.sh $HOME/.toolx/chat && chmod +x $HOME/.toolx/chat) &
         show_spinner "chat"
     fi
     
@@ -317,8 +316,7 @@ linux_spin() {
     
     if [ ! -f "$HOME/.toolx/chat" ]; then
         mkdir -p "$HOME/.toolx"
-        cp $HOME/CODEX/files/chat.sh $HOME/.toolx/chat &
-        chmod +x $HOME/.toolx/chat &
+        (cp $HOME/CODEX/files/chat.sh $HOME/.toolx/chat && chmod +x $HOME/.toolx/chat) &
         show_spinner "chat"
     fi
     
@@ -472,7 +470,7 @@ donotchange() {
     echo "Stable Release" > "$UPDATE_LOG"
     sed "s/DX-SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
     sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
-    echo "$name" > "$USERNAME_FILE" &&
+    echo "$name" > "$USERNAME_FILE"
 
     if [[ $? -eq 0 ]]; then
         mv "$TEMP_FILE" "$OUTPUT_ZSHRC"
@@ -521,7 +519,7 @@ banner() {
         echo -e "${b}╰══════════════════════════⊷"
     fi
     echo
-    echo -e "${b}╭══ ${g}〄 ${y}ᴄᴏᴅᴇx ${g}〄"
+    echo -e "${b}╭══ ${g}㄀ ${y}ᴄᴏᴅᴇx ${g}㄀"
     echo -e "${b}┃❁ ${g}ᴄʀᴇᴀᴛᴏʀ: ${y}ᴅx-ᴄᴏᴅᴇx"
     echo -e "${b}┃❁ ${g}ᴅᴇᴠɪᴄᴇ: ${y}${VENDOR} ${MODEL}"
     echo -e "${b}╰┈➤ ${g}Hey ${y}Dear"
@@ -632,7 +630,7 @@ display_menu() {
     echo
     for i in "${!options[@]}"; do
         if [ $i -eq $selected ]; then
-            echo -e " ${g}〄> ${c}${options[$i]} ${g}<〄${n}"
+            echo -e " ${g}㄀> ${c}${options[$i]} ${g}<㄀${n}"
         else
             echo -e "     ${options[$i]}"
         fi
