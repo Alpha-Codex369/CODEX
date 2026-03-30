@@ -1,0 +1,123 @@
+#!/bin/bash
+clear
+
+# --- dx colors ---
+r='\033[1;91m'
+p='\033[1;95m'
+y='\033[1;93m'
+g='\033[1;92m'
+n='\033[1;0m'
+c='\033[1;96m'
+
+# --- dx Symbols ---
+E='\033[1;92m[\033[1;00m×\033[1;92m]\033[1;91m'
+A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
+C='\033[1;92m[\033[1;00m</>\033[1;92m]\033[92m'
+HOST="\uf6c3"
+
+ask_continue() {
+    clear
+    echo
+    echo -e "                   ${g} What?"
+    echo -e "              ${c}(\_/)"
+    echo -e "              (${n}¤_¤${c})"
+    echo -e "             ⊂(___)づ"
+    echo
+    echo -e " ${C} ${y}Do you want to restore the default terminal?${n}"
+    echo -e " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${n}"
+    echo
+    read -p "[+]──[Select Option]────► " choice
+
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
+
+    if [[ "$choice" == "y" || "$choice" == "yes" ]]; then
+        echo -e "\n ${A} ${c}Process confirmed! Starting removal...${n}"
+        sleep 1.5
+        clear
+    else
+        echo -e "\n ${E} ${r}Process cancelled by user.${n}"
+        echo -e " ${C} ${y}Exiting... ${g}[${n}${HOST}${g}]${n}"
+        echo
+        exit 1
+    fi
+}
+
+show_spinner() {
+    local pid=$!
+    local delay=0.15
+    local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
+    while ps -p $pid > /dev/null; do
+        for i in "${spinner[@]}"; do
+            echo -ne "\r ${A} ${c}Removing $1... ${y}[${g}$i${y}]${n}  "
+            sleep $delay
+        done
+    done
+    echo -ne "\r ${A} ${g}$1 Removed Successfully!${n}          \n"
+}
+
+banner() {
+    clear
+    echo
+    echo -e "                        .  ${g}ᶻ 𝗓 𐰁 .ᐟ..."
+    echo -e "${c}              (\_/) ."
+    echo -e "              (${y}-_-${c})."
+    echo -e "             ⊂(___)づ"
+    echo
+    echo -e " ${C} ${g}Dx-Simu ${c}is now going to sleep 😴 💤${n}"
+    echo
+}
+
+# --- Main Logic ---
+ask_continue
+banner
+
+echo -e "\n ${C} ${y}Restoring Default Terminal...${n}\n"
+
+# 1. Reverting Shell to Bash
+echo -e " ${A} ${c}Reverting Shell to Default (Bash)...${n}"
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    chsh -s bash >/dev/null 2>&1
+else
+    sudo chsh -s $(command -v bash) $USER >/dev/null 2>&1
+fi
+sleep 1
+
+# 2. Removing Core Configs & Oh My Zsh
+rm -rf ~/.oh-my-zsh >/dev/null 2>&1 &
+show_spinner "Oh-My-Zsh"
+
+rm -rf ~/.zshrc ~/.zsh_history >/dev/null 2>&1 &
+show_spinner "ZSH Configuration"
+
+# 3. Removing CODEX Specific Directories
+rm -rf ~/.toolx ~/.Codex-simu >/dev/null 2>&1 &
+show_spinner "ToolX & Cache Directories"
+
+# 4. Platform Specific Cleanup
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    rm -rf ~/.CODEX >/dev/null 2>&1 &
+    show_spinner "CODEX System Files"
+
+    # Restoring Default Termux Look
+    rm -f ~/.termux/font.ttf ~/.termux/colors.properties ~/.termux/dx.txt ~/.termux/usernames.txt ~/.termux/ads.txt >/dev/null 2>&1 &
+    show_spinner "Termux Custom Styles"
+    
+    rm -f $PREFIX/share/figlet/ASCII-Shadow.flf >/dev/null 2>&1 &
+    show_spinner "Figlet Fonts"
+    
+    termux-reload-settings
+else
+    rm -rf ~/.CODEX >/dev/null 2>&1 &
+    show_spinner "Linux CODEX Hidden Files"
+
+    sudo rm -f /usr/share/figlet/ASCII-Shadow.flf >/dev/null 2>&1 &
+    show_spinner "System Fonts"
+fi
+
+echo -e "\n ${A} ${g}Terminal has been successfully restored to Default!${n}"
+echo -e " ${E} ${y}Please restart your Terminal app now.${n}"
+echo
+
+SCRIPT_PATH=$(readlink -f "$0")
+rm -f "$SCRIPT_PATH"
+exit 0
