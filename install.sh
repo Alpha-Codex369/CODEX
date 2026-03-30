@@ -421,24 +421,32 @@ donotchange() {
     echo
     echo -e " ${A} ${c}Please Enter Your ${g}Banner Name${c}"
     echo
-
     while true; do
         read -p "$(echo -e ${c}${A}──[Enter Your Name]────► ${n})" name
         echo
         
-        # Added support for hyphens (-) and numbers (0-9)
-        if [[ ! "$name" =~ ^[a-zA-Z0-9\ -]+$ ]]; then
+        if [[ -z "$name" ]]; then
+            echo -e " ${E} ${r}Name cannot be empty!${c}"
+            echo
+            continue
+        fi
+
+       
+        if [[ ! "$name" =~ ^[a-zA-Z0-9[:space:]-]+$ ]]; then
             echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use letters, numbers, hyphens & spaces only.${c}"
             echo
             continue
         fi
-        name=$(echo "$name" | tr '[:lower:]' '[:upper:]' | tr ' ' '-')
 
-        # Strict 8 character limit
-        if [[ ${#name} -ge 1 && ${#name} -le 8 ]]; then
+        name="${name^^}"
+        name="${name// /-}"
+
+ 
+        len=${#name}
+        if [[ $len -ge 1 && $len -le 8 ]]; then
             break
         else
-            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}${#name}${c}"
+            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}$len${c}"
             echo
         fi
     done
