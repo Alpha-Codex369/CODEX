@@ -1,5 +1,8 @@
 #!/bin/bash
 clear
+mkdir-p $HOME/.CODEX
+mkdir -p $HOME/.Codex-simu
+mkdir -p $HOME/.toolx
 # dx color
 r='\033[1;91m'
 p='\033[1;95m'
@@ -170,8 +173,7 @@ start() {
     clear 
 }
 start
-mkdir -p .Codex-simu
-mkdir -p .toolx
+
 
 tr() {
     if ! command -v curl &>/dev/null; then
