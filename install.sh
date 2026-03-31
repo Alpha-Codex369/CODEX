@@ -464,9 +464,9 @@ donotchange() {
     OUTPUT_ZSHRC="$HOME/.zshrc"
     OUTPUT_THEME="$HOME/.oh-my-zsh/themes/codex.zsh-theme"
     TEMP_FILE="$HOME/temp.zshrc"
-    echo "Stable Release" > "$UPDATE_LOG"
     sed "s/DX-SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
     sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
+    
 if [ -d "/data/data/com.termux/files/usr/" ]; then
     D1="$HOME/.termux"
 else
