@@ -17,19 +17,20 @@
 
   [![Telegram2](https://img.shields.io/badge/TELEGRAM-CHANNEL-red?style=for-the-badge&logo=telegram)](https://t.me/alphacodex369)
 
-## 🔮 FEATURES
 
-*Advance Command found*
-*Advance Exit terminal*
-*Clear Terminal Visual Banner*
-*Auto Update Banner*
-*Advance ASCII ART*
-*Usage Timer*
-*ETC...*
+## 🔮 FEATURES:
 
-## 🧪 NAME & CMD
+**`Advance Command found`**
+**`Advance Exit terminal`**
+**`Clear Terminal Visual Banner`**
+**`Auto Update Banner`**
+**`Advance ASCII ART`**
+**`Usage Timer`**
+**`ETC...`**
 
-| **NAME** | **CMD** |
+
+## 🧪 NAME & CMD:
+
 **Help Menu** `help`
 **Codex Chat** `chat`
 **Restore Terminal** `unstall`
