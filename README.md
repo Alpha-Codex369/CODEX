@@ -32,7 +32,8 @@
 
 **`Usage Timer`**
 
-**`ETC...`**
+**`Etc...`**
+
 ---
 
 ## 🧪 NAME & CMD:
