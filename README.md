@@ -19,13 +19,13 @@
 
 ## 🔮 FEATURES
 
-**Advance Command found**
-**Advance Exit terminal**
-**Clear Terminal Visual Banner**
-**Auto Update Banner**
-**Advance ASCII ART**
-**Usage Timer**
-**ETC**
+*Advance Command found*
+*Advance Exit terminal*
+*Clear Terminal Visual Banner*
+*Auto Update Banner*
+*Advance ASCII ART*
+*Usage Timer*
+*ETC...*
 
 ## 🧪 NAME & CMD
 
