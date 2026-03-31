@@ -411,6 +411,14 @@ dxnetcheck() {
     clear
 }
 
+sync_id() {
+UPDATE_LOG="$HOME/.codex_update_id.txt"
+    if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+        local sid=$(curl -s --connect-timeout 5 "$CODEX/update" 2>/dev/null | jq -r '.id' 2>/dev/null | tr -d '[:space:]')
+        [ -n "$sid" ] && [ "$sid" != "null" ] && echo "$sid" > "$UPDATE_LOG"
+    fi
+}
+
 donotchange() {
     clear
     echo
@@ -467,12 +475,7 @@ donotchange() {
     TEMP_FILE="$HOME/temp.zshrc"
     sed "s/DX-SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
     sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
-    
-CODEX="https://codex-server-x.vercel.app"
-UPDATE_LOG="$HOME/.codex_update_id.txt"
-
-curl -s --connect-timeout 5 "$CODEX/update" | jq -r '.id' | tr -d '[:space:]' > "$UPDATE_LOG" 2>/dev/null   
-  
+ 
   if [[ $? -eq 0 ]]; then
         mv "$TEMP_FILE" "$OUTPUT_ZSHRC"
         clear
@@ -485,7 +488,8 @@ curl -s --connect-timeout 5 "$CODEX/update" | jq -r '.id' | tr -d '[:space:]' > 
         echo
         echo -e " ${A} ${c}Your Banner created ${g}Successfully¡${c}"
         echo
-        sleep 3
+        sleep 1
+        sync_id
     else
         echo
         echo -e " ${E} ${r}Error occurred while processing the file."
