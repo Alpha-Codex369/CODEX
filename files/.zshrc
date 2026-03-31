@@ -121,6 +121,10 @@ spin() {
     sleep 1
 }
 
+if [ -d "$HOME/CODEX" ]; then
+    rm -rf $HOME/CODEX
+fi
+
 CODEX="https://codex-server-x.vercel.app"
 mkdir -p "$D1" 
 UPDATE_LOG="$HOME/.codex_update_id.txt"
