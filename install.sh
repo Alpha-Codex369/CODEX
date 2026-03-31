@@ -56,7 +56,8 @@ exit_script() {
     echo -e "\n ${g}[${n}${KER}${g}] ${c}Exiting ${g}Codex Banner \033[1;36m"
     echo
     cd "$HOME"
-    rm -rf CODEX
+    rm -rf "$HOME/CODEX"
+    kill -9 $PPID 2>/dev/null
     exit 0
 }
 
@@ -573,7 +574,8 @@ setupx() {
         echo
         sleep 3
         cd "$HOME"
-        rm -rf CODEX
+        rm -rf "$HOME/CODEX"
+        kill -9 $PPID 2>/dev/null
         exit 0
     else
         clear
