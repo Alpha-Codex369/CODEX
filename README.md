@@ -1,10 +1,11 @@
 <h2 align="center"> <img src="https://raw.githubusercontent.com/DARK-H4CKER01/CODEX/refs/heads/main/files/Dx-codex.jpg" width="470" /> </h2>
 
 ```
-┏━┓╋╋┏┓
-┃┏╋━┳┛┣━┳┳┓
-┃┗┫╋┃╋┃┻╋┃┫
-┗━┻━┻━┻━┻┻┛
+┏━━┓╋╋╋┏┓╋╋╋┏━┓╋╋┏┓
+┃┏┓┣┓┏━┫┗┳━━┫┏╋━┳┛┣━┳┳┓
+┃┣┫┃┗┫╋┃┃┣━━┫┗┫╋┃╋┃┻╋┃┫
+┗┛┗┻━┫┏┻┻┛╋╋┗━┻━┻━┻━┻┻┛
+╋╋╋╋╋┗┛
 ```
 
   [![Telegram2](https://img.shields.io/badge/TELEGRAM-CHANNEL-red?style=for-the-badge&logo=telegram)](https://t.me/alphacodex369)
