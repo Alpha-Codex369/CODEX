@@ -120,12 +120,17 @@ spin() {
     echo
     sleep 1
 }
-
+if [ -d "$HOME/CODEX" ]; then
+    rm -rf $HOME/CODEX
+ fi
 CODEX="https://codex-server-x.vercel.app"
 mkdir -p "$D1" 
 UPDATE_LOG="$HOME/.codex_update_id.txt"
 
 udp() {
+if [ -d "$HOME/CODEX" ]; then
+    rm -rf $HOME/CODEX
+ fi
     if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         local update_data=$(curl -s --connect-timeout 3 "$CODEX/update" 2>/dev/null)
         local server_id=$(echo "$update_data" | jq -r '.id' 2>/dev/null | tr -d '[:space:]')
