@@ -26,11 +26,11 @@
 ## 🧪 NAME & CMD:
 
 - **Help Menu:** | `help`
-- **Codex Chat:** `chat`
-- **Restore Terminal:** `unstall`
-- **Change Name:** `bname`
-- **Update Banner:** `update`
-- **Report Dev:** `dev` `report`
+- **Codex Chat:** | `chat`
+- **Restore Terminal:** | `unstall`
+- **Change Name:** | `bname`
+- **Update Banner:** | `update`
+- **Report Dev:** | `dev` | `report`
 ---
 
 
