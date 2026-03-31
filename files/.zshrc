@@ -127,31 +127,48 @@ UPDATE_LOG="$HOME/.codex_update_id.txt"
 
 udp() {
     if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-        local update_data=$(curl -s --connect-timeout 3 "$CODEX/update" 2>/dev/null)
-        local server_id=$(echo "$update_data" | jq -r '.id' 2>/dev/null | tr -d '[:space:]')
-        local server_msg=$(echo "$update_data" | jq -r '.message' 2>/dev/null)
+        local update_data
+        update_data=$(curl -s --connect-timeout 3 "$CODEX/update" 2>/dev/null)
+        
+        # Check if API returned empty response
+        if [ -z "$update_data" ] || [ "$update_data" == "null" ]; then return 0; fi
 
+        # Strict character filtering to prevent hidden whitespace/newline mismatch
+        local server_id
+        server_id=$(echo "$update_data" | jq -r '.id' 2>/dev/null | tr -dc 'a-zA-Z0-9.-')
+        
+        local server_msg
+        server_msg=$(echo "$update_data" | jq -r '.message' 2>/dev/null)
+
+        # Proceed only if server_id is valid
         if [ -n "$server_id" ] && [ "$server_id" != "null" ]; then
             local current_id=""
+            
             if [ -f "$UPDATE_LOG" ]; then
-                current_id=$(cat "$UPDATE_LOG" 2>/dev/null | tr -d '[:space:]')
+                current_id=$(cat "$UPDATE_LOG" 2>/dev/null | tr -dc 'a-zA-Z0-9.-')
             fi
 
+            # Strict Match Condition
             if [ "$current_id" != "$server_id" ]; then
-                # Loop Fix: Write the log BEFORE cloning to prevent loop if install.sh sources .zshrc
+                # Write ID first to securely lock and prevent loops
                 echo "$server_id" > "$UPDATE_LOG"
 
                 banner
                 echo -e " ${A} ${c}Tools Updated ${n}| ${c}New ${g}$server_msg"
                 sleep 3
+                
+                # Use strict path to avoid removing wrong folders
                 cd "$HOME" || return
-                rm -rf CODEX
+                rm -rf "$HOME/CODEX"
+                
                 git clone https://github.com/Alpha-Codex369/CODEX.git >/dev/null 2>&1 &
                 spin
                 
-                if [ -d "CODEX" ]; then
-                    cd CODEX || return
-                    bash install.sh
+                if [ -d "$HOME/CODEX" ]; then
+                    cd "$HOME/CODEX" || return
+                    if [ -f "install.sh" ]; then
+                        bash install.sh
+                    fi
                 fi
             fi
         fi
