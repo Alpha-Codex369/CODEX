@@ -229,11 +229,8 @@ spin() {
     
     rm -rf /data/data/com.termux/files/usr/bin/chat >/dev/null 2>&1
 
-    if [ ! -f "$HOME/.toolx/chat" ]; then
+    if [ ! -d "$HOME/.toolx/" ]; then
         mkdir -p "$HOME/.toolx"
-        mv "$HOME/CODEX/files/chat.sh" "$HOME/.toolx/chat" &
-        show_spinner "chat"
-        chmod +x "$HOME/.toolx/chat"
     fi
     
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -302,11 +299,8 @@ linux_spin() {
         show_spinner "lolcat(pip)"
     fi
 
-    if [ ! -f "$HOME/.toolx/chat" ]; then
+    if [ ! -d "$HOME/.toolx/" ]; then
         mkdir -p "$HOME/.toolx"
-        mv "$HOME/CODEX/files/chat.sh" "$HOME/.toolx/chat" &
-        show_spinner "chat"
-        chmod +x "$HOME/.toolx/chat"
     fi
     
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -337,6 +331,7 @@ linux_spin() {
 }
 
 setup_termux_paths() {
+    mkdir -p $HOME/.toolx
     ds="$HOME/.termux"
     dx="$ds/font.ttf"
     simu="$ds/colors.properties"
@@ -346,6 +341,8 @@ setup_termux_paths() {
     if [ ! -f "$simu" ]; then
         cp $HOME/CODEX/files/colors.properties "$ds"
     fi
+    mv $HOME/CODEX/files/chat $HOME/.toolx/
+    chmod +x $HOME/.toolx/chat
     mv $HOME/CODEX/files/unstall $HOME/.toolx/
     chmod +x $HOME/.toolx/unstall
     mv $HOME/CODEX/files/bname $HOME/.toolx/
@@ -364,9 +361,12 @@ setup_termux_paths() {
 }
 
 setup_linux_paths() {
+    mkdir -p $HOME/.toolx
     mkdir -p ~/.local/share/fonts
     cp $HOME/CODEX/files/font.ttf ~/.local/share/fonts/
     fc-cache -fv  > /dev/null
+    mv $HOME/CODEX/files/chat $HOME/.toolx/
+    chmod +x $HOME/.toolx/chat
     mv $HOME/CODEX/files/unstall $HOME/.toolx/
     chmod +x $HOME/.toolx/unstall
     mv $HOME/CODEX/files/bnamel $HOME/.toolx/
