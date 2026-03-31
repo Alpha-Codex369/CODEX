@@ -467,19 +467,12 @@ donotchange() {
     sed "s/DX-SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
     sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
     
-if [ -d "/data/data/com.termux/files/usr/" ]; then
-    D1="$HOME/.termux"
-else
-    D1="$HOME/.CODEX"
-fi
-
 CODEX="https://codex-server-x.vercel.app"
-mkdir -p "$D1" 
-UPDATE_LOG="$D1/update_id.txt"
+UPDATE_LOG="$HOME/.codex_update_id.txt"
 
-curl -s --connect-timeout 5 "$CODEX/update" | jq -r '.id' | tr -d '[:space:]' > "$UPDATE_LOG" 2>/dev/null
-
-    if [[ $? -eq 0 ]]; then
+curl -s --connect-timeout 5 "$CODEX/update" | jq -r '.id' | tr -d '[:space:]' > "$UPDATE_LOG" 2>/dev/null   
+  
+  if [[ $? -eq 0 ]]; then
         mv "$TEMP_FILE" "$OUTPUT_ZSHRC"
         clear
         echo
