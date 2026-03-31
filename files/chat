@@ -2,7 +2,7 @@
 
 
 if command -v jq &>/dev/null; then
-    echo ""
+    clear
 else
     if [ -d "/data/data/com.termux/files/usr/" ]; then
         pkg install jq -y >/dev/null 2>&1
@@ -13,7 +13,7 @@ else
 fi
 
 if command -v curl &>/dev/null; then
-    echo ""
+    clear
 else
     if [ -d "/data/data/com.termux/files/usr/" ]; then
         pkg install curl -y >/dev/null 2>&1
@@ -24,7 +24,7 @@ else
 fi
 
 if command -v coreutils &>/dev/null; then
-    echo ""
+    clear
 else
     if [ -d "/data/data/com.termux/files/usr/" ]; then
         pkg install coreutils -y >/dev/null 2>&1
@@ -35,7 +35,7 @@ else
 fi
 
 if command -v tput &>/dev/null; then
-    echo ""
+    clear
 else
     if [ -d "/data/data/com.termux/files/usr/" ]; then
         pkg install ncurses-utils -y >/dev/null 2>&1
@@ -133,7 +133,7 @@ trap _cleanup EXIT INT TERM
 inter() {
     clear; echo
     echo -e "                ${g}╔════════════════╗"
-    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}   ║"
+    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}  ║"
     echo -e "                ${g}╚════════════════╝"
     echo -e "  ${g}╔════════════════════════════════════════════╗"
     echo -e "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
@@ -257,7 +257,7 @@ render_header() {
     tput cup 0 0; tput el; printf '%b' " ${r}●${y}●${b}●${n}  $cur_date  ${dim}│${n}  $cur_time"
     tput cup 1 0; tput el; printf '%b' " $lm"
     tput cup 2 0; tput el; printf '%b' "  ${c}┏┓┓┏┏┓┏┳┓"
-    tput cup 3 0; tput el; printf '%b' "  ${c}┃ ┣┫┣┫ ┃               ${CC} ${g}t.me/Codex_369"
+    tput cup 3 0; tput el; printf '%b' "  ${c}┃ ┣┫┣┫ ┃               ${CC} ${g}t.me/Termuxcodex"
     tput cup 4 0; tput el; printf '%b' "  ${c}┗┛┛┗┛┗ ┻"
     tput cup 5 0; tput el; printf '%b' " $lm"
     tput cup 6 0; tput el
