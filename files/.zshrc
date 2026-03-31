@@ -128,16 +128,19 @@ UPDATE_LOG="$D1/update_id.txt"
 udp() {
     if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         local update_data=$(curl -s --connect-timeout 3 "$CODEX/update" 2>/dev/null)
-        local server_id=$(echo "$update_data" | jq -r '.id' 2>/dev/null)
+        local server_id=$(echo "$update_data" | jq -r '.id' 2>/dev/null | tr -d '[:space:]')
         local server_msg=$(echo "$update_data" | jq -r '.message' 2>/dev/null)
 
         if [ -n "$server_id" ] && [ "$server_id" != "null" ]; then
             local current_id=""
             if [ -f "$UPDATE_LOG" ]; then
-                current_id=$(cat "$UPDATE_LOG")
+                current_id=$(cat "$UPDATE_LOG" 2>/dev/null | tr -d '[:space:]')
             fi
 
             if [ "$current_id" != "$server_id" ]; then
+                # Loop Fix: Write the log BEFORE cloning to prevent loop if install.sh sources .zshrc
+                echo "$server_id" > "$UPDATE_LOG"
+
                 banner
                 echo -e " ${A} ${c}Tools Updated ${n}| ${c}New ${g}$server_msg"
                 sleep 3
@@ -145,8 +148,6 @@ udp() {
                 rm -rf CODEX
                 git clone https://github.com/Alpha-Codex369/CODEX.git >/dev/null 2>&1 &
                 spin
-                
-                echo "$server_id" > "$UPDATE_LOG"
                 
                 if [ -d "CODEX" ]; then
                     cd CODEX || return
@@ -199,11 +200,9 @@ draw_dashboard() {
 
     local spaces=$(printf '%*s' $padding "")
 
-    # Draw Header
     PUT 1 1
     echo -e "${prefix}${spaces}${data}${c}"
 
-    # Draw the Background Box Outline
     PUT 2 1
     echo -e "\033[36;1m╔${var2}╗\033[0m"
     for ((i=3; i<=10; i++)); do
@@ -213,13 +212,11 @@ draw_dashboard() {
     PUT 11 1
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
-    # Print the ASCII art inside the box
     PUT 4 1
     if command -v simu >/dev/null 2>&1; then
         simu -w $width "DX-SIMU" | lolcat -f 2>/dev/null || simu -w $width "DX-SIMU"
     fi
 
-    # Redraw borders to prevent ASCII space overlapping & glitching
     PUT 2 1
     echo -e "\033[36;1m╔${var2}╗\033[0m"
     for ((i=3; i<=10; i++)); do
@@ -231,11 +228,9 @@ draw_dashboard() {
     PUT 11 1
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
-    # CODEX Version Tag Inside
     PUT 10 ${var4}
     echo -e "\e[32m[\e[0m\uf489\e[32m] \e[36mCODEX \e[36m1.5\e[0m"
 
-    # Footer section
     PUT 12 1
     local ads1=""
     if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
@@ -250,7 +245,6 @@ draw_dashboard() {
         echo -e " ${g}[${n}${PKGS}${g}] ${c}Ｃｏｄｅｘ: ${g}$ads1"
     fi
 
-    # Reset Cursor Below drawing to prevent prompt overlap
     PUT 13 1
     NORM
 }
