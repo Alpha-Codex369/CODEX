@@ -21,22 +21,35 @@
 ## 🔮 FEATURES:
 
 **`Advance Command found`**
+
 **`Advance Exit terminal`**
+
 **`Clear Terminal Visual Banner`**
+
 **`Auto Update Banner`**
+
 **`Advance ASCII ART`**
+
 **`Usage Timer`**
+
 **`ETC...`**
 
+---
 
 ## 🧪 NAME & CMD:
 
 **Help Menu** `help`
+
 **Codex Chat** `chat`
+
 **Restore Terminal** `unstall`
+
 **Change Name** `bname`
+
 **Update Banner** `update`
+
 **Report Dev** `dev` `report`
+
 
 
 ## 📱 INSTALL WITH TERMUX :
