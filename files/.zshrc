@@ -143,7 +143,6 @@ if [ -d "$HOME/CODEX" ]; then
             fi
 
             if [ "$current_id" != "$server_id" ]; then
-                # Loop Fix: Write the log BEFORE cloning to prevent loop if install.sh sources .zshrc
                 echo "$server_id" > "$UPDATE_LOG"
 
                 banner
@@ -205,11 +204,9 @@ draw_dashboard() {
 
     local spaces=$(printf '%*s' $padding "")
 
-    # Draw Header
     PUT 1 1
     echo -e "${prefix}${spaces}${data}${c}"
 
-    # Draw the Background Box Outline
     PUT 2 1
     echo -e "\033[36;1m╔${var2}╗\033[0m"
     for ((i=3; i<=10; i++)); do
@@ -219,13 +216,11 @@ draw_dashboard() {
     PUT 11 1
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
-    # Print the ASCII art inside the box
     PUT 4 1
     if command -v simu >/dev/null 2>&1; then
         simu -w $width "DX-SIMU" | lolcat -f 2>/dev/null || simu -w $width "DX-SIMU"
     fi
 
-    # Redraw borders to prevent ASCII space overlapping & glitching
     PUT 2 1
     echo -e "\033[36;1m╔${var2}╗\033[0m"
     for ((i=3; i<=10; i++)); do
@@ -237,18 +232,16 @@ draw_dashboard() {
     PUT 11 1
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
-    # CODEX Version Tag Inside
     PUT 10 ${var4}
     echo -e "\e[32m[\e[0m\uf489\e[32m] \e[36mCODEX \e[36m1.5\e[0m"
 
-    # Footer section
     PUT 12 1
     local ads1=""
     if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
         ads1=$(curl -s --connect-timeout 2 "$CODEX/ads" | jq -r '.message' 2>/dev/null)
     fi
 
-    if [ -z "$ads1" ] || [ "$ads1" == "null" ]; then
+    if [ -z "$ads1" ] || [ "$ads1" = "null" ]; then
         local DATE=$(date +"%Y-%b-%a ${g}—${c} %d")
         local TM=$(date +"%I:%M:%S ${g}— ${c}%p")
         echo -e " ${g}[${n}${CAL}${g}] ${c}${TM} ${g}| ${c}${DATE}"
@@ -256,7 +249,6 @@ draw_dashboard() {
         echo -e " ${g}[${n}${PKGS}${g}] ${c}Ｃｏｄｅｘ: ${g}$ads1"
     fi
 
-    # Reset Cursor Below drawing to prevent prompt overlap
     PUT 13 1
     NORM
 }
