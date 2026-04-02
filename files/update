@@ -88,11 +88,11 @@ banner() {
 spin() {
     local pid=$!
     local delay=0.2
-    local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
+    local spinner="█■■■■ ■█■■■ ■■█■■ ■■■█■ ■■■■█"
 
     tput civis
     while ps -p $pid > /dev/null 2>&1; do
-        for i in "${spinner[@]}"; do
+        for i in $spinner; do
             echo -ne "\r \033[1;96m${A} \033[1;92mDownloading Please Wait... \e[33m[\033[1;96m$i\e[33m]\033[1;0m   "
             sleep $delay
         done
