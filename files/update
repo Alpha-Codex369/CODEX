@@ -1,3 +1,5 @@
+#!/bin/bash
+
 r='\033[91m'
 p='\033[1;95m'
 y='\033[93m'
@@ -13,27 +15,22 @@ A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
 C='\033[1;92m[\033[1;00m</>\033[1;32m]\033[1;92m'
 HOST="\uf6c3"
 
-anim_line() {
-    echo -e "$1"
-    sleep 0.05
-}
-
 ask() {
     clear
     echo
-    anim_line "		       ${g}Cute-Simu...♡"
-    anim_line "${c}              (\_/)"
-    anim_line "              (${p}♡ω♡${c})"
-    anim_line "             ⊂(___)づ ᯓᡣ𐭩"
+    echo -e "		       ${g}Cute-Simu...♡"
+    echo -e "${c}              (\\_/)"
+    echo -e "              (${p}♡ω♡${c})"
+    echo -e "             ⊂(___)づ ᯓᡣ𐭩"
     echo
-    anim_line " ${C} ${y}Do you want to Update Codex banner?${n}"
-    anim_line " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${c}"
+    echo -e " ${C} ${y}Do you want to Update Codex banner?${n}"
+    echo -e " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${c}"
     echo
     read -p "[+]──[Select Option]────► " choice
 
     choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
-    if [[ "$choice" == "y" || "$choice" == "yes" ]]; then
+    if [ "$choice" = "y" ] || [ "$choice" = "yes" ]; then
         echo -e "\n ${A} ${c}Process confirmed! Starting removal...${n}"
         sleep 1.0
         clear
@@ -48,20 +45,20 @@ ask() {
 dxnetcheck() {
     clear
     echo
-    anim_line "		                 ${g}Uhu"
-    anim_line "${c}                        (\_/)"
-    anim_line "                        (${y}^_^${c})"
-    anim_line "                       ⊂(___)づ"
+    echo -e "		                 ${g}Uhu"
+    echo -e "${c}                        (\\_/)"
+    echo -e "                        (${y}^_^${c})"
+    echo -e "                       ⊂(___)づ"
     echo
-    anim_line "                ${g}╔════════════════╗"
-    anim_line "                ${g}║ ${n}</>  ${c}CODEX-X${g}   ║"
-    anim_line "                ${g}╚════════════════╝"
-    anim_line "  ${g}╔════════════════════════════════════════════╗"
-    anim_line "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
-    anim_line "  ${g}╚════════════════════════════════════════════╝${n}"
+    echo -e "                ${g}╔════════════════╗"
+    echo -e "                ${g}║ ${n}</>  ${c}CODEX-X${g}   ║"
+    echo -e "                ${g}╚════════════════╝"
+    echo -e "  ${g}╔════════════════════════════════════════════╗"
+    echo -e "  ${g}║  ${y} Checking Your Internet Connection¡ ${g}      ║"
+    echo -e "  ${g}╚════════════════════════════════════════════╝${n}"
     while true; do
         curl --silent --head --fail https://github.com > /dev/null
-        if [ "$?" != 0 ]; then
+        if [ $? -ne 0 ]; then
             clear
             echo -e "\n\n              ${g}╔══════════════════╗"
             echo -e "              ${g}║${C} ${r}No Internet ${g}║"
@@ -76,12 +73,12 @@ dxnetcheck() {
 
 banner() {
     echo
-    anim_line "    ${y}░█████╗░░█████╗░██████╗░███████╗██╗░░██╗"
-    anim_line "    ${y}██╔══██╗██╔══██╗██╔══██╗██╔════╝╚██╗██╔╝"
-    anim_line "    ${y}██║░░╚═╝██║░░██║██║░░██║█████╗░░░╚███╔╝░"
-    anim_line "    ${c}██║░░██╗██║░░██║██║░░██║██╔══╝░░░██╔██╗░"
-    anim_line "    ${c}╚█████╔╝╚█████╔╝██████╔╝███████╗██╔╝╚██╗"
-    anim_line "    ${c}░╚════╝░░╚════╝░╚═════╝░╚══════╝╚═╝░░╚═╝${n}"
+    echo -e "    ${y}░█████╗░░█████╗░██████╗░███████╗██╗░░██╗"
+    echo -e "    ${y}██╔══██╗██╔══██╗██╔══██╗██╔════╝╚██╗██╔╝"
+    echo -e "    ${y}██║░░╚═╝██║░░██║██║░░██║█████╗░░░╚███╔╝░"
+    echo -e "    ${c}██║░░██╗██║░░██║██║░░██║██╔══╝░░░██╔██╗░"
+    echo -e "    ${c}╚█████╔╝╚█████╔╝██████╔╝███████╗██╔╝╚██╗"
+    echo -e "    ${c}░╚════╝░░╚════╝░╚═════╝░╚══════╝╚═╝░░╚═╝${n}"
     echo
 }
 
@@ -91,7 +88,7 @@ spin() {
     local spinner="█■■■■ ■█■■■ ■■█■■ ■■■█■ ■■■■█"
 
     tput civis
-    while ps -p $pid > /dev/null 2>&1; do
+    while ps -p "$pid" > /dev/null 2>&1; do
         for i in $spinner; do
             echo -ne "\r \033[1;96m${A} \033[1;92mDownloading Please Wait... \e[33m[\033[1;96m$i\e[33m]\033[1;0m   "
             sleep $delay
@@ -102,16 +99,18 @@ spin() {
     echo
     sleep 1
 }
+
 if [ -d "$HOME/.toolx" ]; then
     clear
 else
     echo -e "\n ${g}[${n}$HOST${g}] ${c}Codex Not Exits${n}\n"
     exit 0
- fi
+fi
+
 ask
 dxnetcheck
 banner
-anim_line " ${A} ${c}Codex Initialization Started...${n}"
+echo -e " ${A} ${c}Codex Initialization Started...${n}"
 sleep 1.5
 
 cd "$HOME" || exit 1
