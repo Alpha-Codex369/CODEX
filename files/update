@@ -22,7 +22,7 @@ select_option() {
     while true; do
         clear
         echo
-        echo -e "		       ${g}Cute-Simu...♡"
+        echo -e "		       ${g}Dx-Simu...♡"
         echo -e "${c}              (\\_/)"
         echo -e "              (${p}♡ω♡${c})"
         echo -e "             ⊂(___)づ ᯓᡣ𐭩"
