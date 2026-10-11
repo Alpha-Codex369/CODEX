@@ -1,3 +1,5 @@
+ZSH_THEME="codex"
+
 if [ -d "/data/data/com.termux/files/usr/" ]; then
     export ZSH=$HOME/.oh-my-zsh
     CODEX_DIR="$HOME/.codex"
