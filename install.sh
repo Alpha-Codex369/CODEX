@@ -416,7 +416,7 @@ setup_termux_paths() {
    
     mv "$HOME/CODEX/files/chat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/chat"
    
-    mv "$HOME/CODEX/files/unstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/unstall"
+    mv "$HOME/CODEX/files/unistall" "$HOME/.codex/" && chmod +x "$HOME/.codex/unistall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
     mv "$HOME/CODEX/files/simu" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/simu"
     mv "$HOME/CODEX/files/dev" "$HOME/.codex/" && chmod +x "$HOME/.codex/dev"
