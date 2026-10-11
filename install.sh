@@ -480,6 +480,7 @@ UPDATE_LOG="$HOME/.codex_update_id.txt"
         [ -n "$sid" ] && [ "$sid" != "null" ] && echo "$sid" > "$UPDATE_LOG"
     fi
 }
+
 donotchange() {
     clear
     echo
@@ -492,7 +493,7 @@ donotchange() {
     echo -e " ${A} ${c}Please Enter Your ${g}Banner Name${c}"
     echo
     while true; do
-        read -p "$(echo -e ${c}${A}──[Enter Your Name]────► ${n})" name
+        read -p "$(echo -e "${c}${A}──[Enter Your Name]────► ${n}")" name
         echo
        
         if [[ -z "$name" ]]; then
@@ -539,7 +540,7 @@ donotchange() {
     TEMP_FILE="$HOME/temp.zshrc"
    
     sed "s/DX-SIMU/$name/g" "$INPUT_FILE" > "$TEMP_FILE" &&
-    sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME" &&
+    sed "s/DX-SIMU/$name/g" "$THEME_INPUT" > "$OUTPUT_THEME"
  
     if [[ $? -eq 0 ]]; then
         mv "$TEMP_FILE" "$OUTPUT_ZSHRC"
@@ -594,6 +595,7 @@ banner() {
     echo -e "${b}╰┈➤ ${g}Hey ${y}Dear"
     echo
 }
+
 setupx() {
     tr
     dxnetcheck
@@ -680,6 +682,7 @@ setupx() {
         exit
     fi
 }
+
 banner2() {
     echo
     echo
@@ -719,7 +722,7 @@ display_menu() {
     clear
     banner2
     echo
-    echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪️︎${n}"
+    echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪${n}"
     echo
     for i in "${!options[@]}"; do
         if [ $i -eq $selected ]; then
@@ -729,6 +732,7 @@ display_menu() {
         fi
     done
 }
+
 if [ -d "/data/data/com.termux/files/usr/" ]; then
     clear
     echo -e " ${p}❐${n} \e[4m${g}Use Button${n}\e[0m ${p}❏${n}\n"
@@ -740,6 +744,7 @@ if [ -d "/data/data/com.termux/files/usr/" ]; then
     read -p ""
     clear
 fi
+
 while true; do
     display_menu
     read -rsn1 input
@@ -749,13 +754,13 @@ while true; do
     fi
 
     case "$input" in
-        $'\x1b'[A | $'\e'[A) # Up Arrow
+        $'\x1b[A' | $'\e[A') # Up Arrow
             ((selected--))
             if [ $selected -lt 0 ]; then
                 selected=$((${#options[@]} - 1))
             fi
             ;;
-        $'\x1b'[B | $'\e'[B) # Down Arrow
+        $'\x1b[B' | $'\e[B') # Down Arrow
             ((selected++))
             if [ $selected -ge ${#options[@]} ]; then
                 selected=0
