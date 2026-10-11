@@ -1,0 +1,237 @@
+#!/bin/bash¡
+clear
+
+r='\033[1;91m'
+p='\033[1;95m'
+y='\033[1;93m'
+g='\033[1;92m'
+n='\033[0m'
+c='\033[1;96m'
+
+E='\033[1;92m[\033[0m×\033[1;92m]\033[1;91m'
+A='\033[1;92m[\033[0m+\033[1;92m]\033[1;92m'
+C='\033[1;92m[\033[0m</>\033[1;92m]\033[1;92m'
+
+HOST="\uf6c3"
+SLEEP=$'\uf186'
+
+if [[ -n "${PREFIX:-}" && "$PREFIX" == *com.termux* ]]; then
+    PLATFORM="termux"
+else
+    PLATFORM="linux"
+fi
+
+happy() {
+    echo -e "              ${y}(\\/)${n}"
+    echo -e "              ${y}(${g}^.^${y})     ${g}$1${n}"
+    echo -e "             ${y}⊂(__)づ  ${c}⋅˚₊‧ ଳ ‧${n}"
+}
+
+confused() {
+    echo -e "              ${c}(\\/)${n}"
+    echo -e "              ${c}(${y}¤¤${c})     ${y}$1${n}"
+    echo -e "             ${c}⊂(___)づ${n}"
+}
+
+select_option() {
+    local selected=1 key key2
+    local options=("Uninstall" "Cancel")
+
+    while true; do
+        clear
+        echo
+        confused "${C}${g} What?${n}"
+        echo
+        echo -e " ${C} ${y}Restore the default terminal?${n}"
+        echo -e " ${A} ${c}Use ↑ / ↓ to select, Enter to confirm.${n}"
+        echo
+        echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪︎${n}"
+        echo
+
+        for i in "${!options[@]}"; do
+            if (( i == selected )); then
+                if (( i == 0 )); then
+                    echo -e " ${r}〄> ${r}${options[$i]} ${r}<〄${n}"
+                else
+                    echo -e " ${g}〄> ${g}${options[$i]} ${g}<〄${n}"
+                fi
+            elif (( i == 0 )); then
+                echo -e "     ${r}${options[$i]}${n}"
+            else
+                echo -e "     ${g}${options[$i]}${n}"
+            fi
+        done
+
+        echo
+        IFS= read -rsn1 key
+
+        if [[ -z "$key" ]]; then
+            return "$selected"
+        fi
+
+        if [[ "$key" == $'\x1b' ]]; then
+            IFS= read -rsn2 -t 0.2 key2 || true
+            case "$key2" in
+                '[A') (( selected > 0 )) && ((selected--)) ;;
+                '[B') (( selected < ${#options[@]} - 1 )) && ((selected++)) ;;
+            esac
+        fi
+    done
+}
+
+show_spinner() {
+    local pid="$1" name="$2"
+    local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
+    local i=0 status
+
+    while kill -0 "$pid" 2>/dev/null; do
+        printf "\r ${A} ${c}Removing %s... ${y}[%s]${n}  " \
+            "$name" "${spinner[i++ % ${#spinner[@]}]}"
+        sleep 0.15
+    done
+
+    wait "$pid"
+    status=$?
+
+    if (( status == 0 )); then
+        printf "\r ${A} ${g}%s Removed Successfully!${n}          \n" "$name"
+    else
+        printf "\r ${E} ${r}%s removal failed!${n}          \n" "$name"
+    fi
+
+    return "$status"
+}
+
+remove_path() {
+    local path="$1" name="$2"
+
+    [[ -e "$path" || -L "$path" ]] || return 0
+
+    rm -rf -- "$path" >/dev/null 2>&1 &
+    show_spinner "$!" "$name"
+}
+
+clean_bashrc() {
+    local file="$1" backup="$2"
+
+    [[ -f "$file" ]] || return 0
+
+    if ! cp -p -- "$file" "$backup"; then
+        echo -e " ${E} ${r}Could not back up $file; leaving it unchanged.${n}"
+        return 1
+    fi
+
+    if grep -q '# CODEX CONFIG START' "$file" &&
+       grep -q '# CODEX CONFIG END' "$file"; then
+        sed -i '/# CODEX CONFIG START/,/# CODEX CONFIG END/d' "$file"
+        echo -e " ${A} ${g}Removed CODEX startup block.${n}"
+        echo -e " ${A} ${c}Backup: $backup${n}"
+    fi
+}
+
+restore_motd() {
+    local name src dest found=0 failed=0
+
+    [[ "$PLATFORM" == "termux" ]] || return 0
+
+    for name in motd motd.sh; do
+        src="$HOME/.CODEX/$name"
+        [[ -f "$src" ]] || continue
+
+        found=1
+        dest="$PREFIX/etc/$name"
+
+        if cp -f -- "$src" "$dest" 2>/dev/null; then
+            echo -e " ${A} ${g}Restored $name${n}"
+        else
+            echo -e " ${E} ${r}Could not restore $name${n}"
+            failed=1
+        fi
+    done
+
+    if (( found == 0 )); then
+        echo -e " ${C} ${y}No motd or motd.sh found in ~/.CODEX${n}"
+    fi
+
+    return "$failed"
+}
+
+select_option
+selection=$?
+
+if (( selection == 1 )); then
+    clear
+    echo
+    happy "${A}${g}Nothing changed!${n}"
+    echo
+    echo -e " ${C} ${g}Cancelled.${n}"
+    exit 0
+fi
+
+clear
+echo
+echo -e "                        . ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
+echo -e "${c}              (\\/) ."
+echo -e "              (${y}--${c})."
+echo -e "             ⊂(___)づ${n}"
+echo
+echo -e " ${C} ${g}Dx-Simu ${c}is going to sleep ${SLEEP}${n}"
+echo
+sleep 1
+
+echo -e "\n ${C} ${y}Restoring Default Terminal...${n}\n"
+
+restore_motd
+
+echo -e "\n ${A} ${c}Reverting shell to Bash...${n}"
+
+if [[ "$PLATFORM" == "termux" ]]; then
+    command -v chsh >/dev/null 2>&1 && chsh -s bash >/dev/null 2>&1
+elif command -v sudo >/dev/null 2>&1; then
+    sudo chsh -s "$(command -v bash)" "$USER" >/dev/null 2>&1
+fi
+
+if [[ -f "$HOME/.zshrc" ]]; then
+    cp -p "$HOME/.zshrc" "$HOME/.zshrc.uninstall-backup" &&
+        remove_path "$HOME/.zshrc" "ZSH Configuration"
+fi
+
+remove_path "$HOME/.zsh_history" "ZSH History"
+remove_path "$HOME/.oh-my-zsh" "Oh-My-Zsh"
+
+remove_path "$HOME/.toolx" "ToolX Directory"
+remove_path "$HOME/.codex" "Codex Directory"
+remove_path "$HOME/.Codex-simu" "DX-SIMU Cache"
+remove_path "$HOME/.CODEX" "CODEX System Files"
+
+if [[ "$PLATFORM" == "termux" ]]; then
+    remove_path "$HOME/.termux/font.ttf" "Custom Font"
+    remove_path "$HOME/.termux/colors.properties" "Custom Colors"
+    remove_path "$HOME/.termux/dx.txt" "DX Banner"
+    remove_path "$HOME/.termux/usernames.txt" "Usernames"
+    remove_path "$HOME/.termux/ads.txt" "Custom Ads"
+
+    remove_path "$PREFIX/share/figlet/ASCII-Shadow.flf" "Figlet Font"
+
+    command -v termux-reload-settings >/dev/null 2>&1 &&
+        termux-reload-settings >/dev/null 2>&1
+else
+    remove_path "/usr/share/figlet/ASCII-Shadow.flf" "System Figlet Font"
+fi
+
+clean_bashrc "$HOME/.bashrc" "$HOME/.bashrc.uninstall-backup"
+
+if [[ "$PLATFORM" == "termux" ]]; then
+    for name in unstall bname simu dev update help; do
+        remove_path "$PREFIX/bin/$name" "$name Command"
+    done
+fi
+
+hash -r 2>/dev/null
+
+echo
+echo -e " ${A} ${g}CODEX cleanup finished!${n}"
+echo -e " ${E} ${y}Exit and reopen your terminal.${n}"
+echo
+
+exit 0
