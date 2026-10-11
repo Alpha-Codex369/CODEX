@@ -15,31 +15,55 @@ A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
 C='\033[1;92m[\033[1;00m</>\033[1;32m]\033[1;92m'
 HOST="\uf6c3"
 
-ask() {
-    clear
-    echo
-    echo -e "		       ${g}Cute-Simu...♡"
-    echo -e "${c}              (\\_/)"
-    echo -e "              (${p}♡ω♡${c})"
-    echo -e "             ⊂(___)づ ᯓᡣ𐭩"
-    echo
-    echo -e " ${C} ${y}Do you want to Update Codex banner?${n}"
-    echo -e " ${A} ${g}Type ${y}'y'${g} or ${y}'yes'${g} to continue, otherwise cancel.${c}"
-    echo
-    read -p "[+]──[Select Option]────► " choice
+select_option() {
+    local selected=0 key key2
+    local options=("Update" "Cancel")
 
-    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
-
-    if [ "$choice" = "y" ] || [ "$choice" = "yes" ]; then
-        echo -e "\n ${A} ${c}Process confirmed! Starting removal...${n}"
-        sleep 1.0
+    while true; do
         clear
-    else
-        echo -e "\n ${E} ${r}Process cancelled by user.${n}"
-        echo -e " ${C} ${y}Exiting... ${g}[${n}${HOST}${g}]${n}"
         echo
-        exit 1
-    fi
+        echo -e "		       ${g}Cute-Simu...♡"
+        echo -e "${c}              (\\_/)"
+        echo -e "              (${p}♡ω♡${c})"
+        echo -e "             ⊂(___)づ ᯓᡣ𐭩"
+        echo
+        echo -e " ${C} ${y}Do you want to Update Codex banner?${n}"
+        echo -e " ${A} ${c}Use ↑ / ↓ to select, Enter to confirm.${n}"
+        echo
+        echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪️︎${n}"
+        echo
+
+        for i in "${!options[@]}"; do
+            if (( i == selected )); then
+                if (( i == 0 )); then
+                    echo -e " ${g}〄> ${c}${options[$i]} ${g}<〄${n}"
+                else
+                    echo -e " ${r}〄> ${r}${options[$i]} ${r}<〄${n}"
+                fi
+            else
+                if (( i == 0 )); then
+                    echo -e "     ${options[$i]}"
+                else
+                    echo -e "     ${r}${options[$i]}${n}"
+                fi
+            fi
+        done
+
+        echo
+        IFS= read -rsn1 key
+
+        if [[ -z "$key" ]]; then
+            return "$selected"
+        fi
+
+        if [[ "$key" == $'\x1b' ]]; then
+            IFS= read -rsn2 -t 0.2 key2 || true
+            case "$key2" in
+                '[A') (( selected > 0 )) && ((selected--)) ;;
+                '[B') (( selected < ${#options[@]} - 1 )) && ((selected++)) ;;
+            esac
+        fi
+    done
 }
 
 dxnetcheck() {
@@ -83,31 +107,49 @@ banner() {
 }
 
 spin() {
-    local pid=$!
-    local delay=0.2
-    local spinner="█■■■■ ■█■■■ ■■█■■ ■■■█■ ■■■■█"
-
-    tput civis
-    while ps -p "$pid" > /dev/null 2>&1; do
-        for i in $spinner; do
-            echo -ne "\r \033[1;96m${A} \033[1;92mDownloading Please Wait... \e[33m[\033[1;96m$i\e[33m]\033[1;0m   "
-            sleep $delay
+    local label="Updating Tools"
+    local pos=0 dir=1 i bar
+    
+    while kill -0 "$pid" 2>/dev/null; do
+        bar=""
+        for ((i=0; i<10; i++)); do
+            if ((i >= pos && i < pos+3)); then bar+="${g}▰${n}"; else bar+="${c}▱${n}"; fi
         done
+        printf '\r\033[2K %b[%b%s%b] %b' "$g" "$n" "$label" "$g" "$bar"
+        sleep 0.1 2>/dev/null
+        ((pos+=dir))
+        if ((pos >= 7)); then dir=-1; elif ((pos <= 0)); then dir=1; fi
     done
-    tput cnorm
-    echo -ne "\r \033[1;92m${A} \033[1;92mDownload Complete!             \n"
-    echo
-    sleep 1
+    
+    wait "$pid" 2>/dev/null
+    local rc=$?
+    bar=""
+    if ((rc == 0)); then
+        for ((i=0; i<10; i++)); do bar+="${g}▰${n}"; done
+        printf '\r\033[2K %b[%b%s%b] %b | %bupdated%b\n' "$g" "$n" "$label" "$g" "$bar" "$g" "$n"
+    else
+        for ((i=0; i<10; i++)); do bar+="${c}▱${n}"; done
+        printf '\r\033[2K %b[%b%s%b] %b | %bFAIL%b\n' "$g" "$n" "$label" "$g" "$bar" "$r" "$n"
+    fi
 }
 
-if [ -d "$HOME/.toolx" ]; then
+if [ -d "$HOME/.codex" ]; then
     clear
 else
     echo -e "\n ${g}[${n}$HOST${g}] ${c}Codex Not Exits${n}\n"
     exit 0
 fi
 
-ask
+select_option
+selection=$?
+
+if (( selection == 1 )); then
+    echo -e "\n ${E} ${r}Process cancelled by user.${n}"
+    echo -e " ${C} ${y}Exiting... ${g}[${n}${HOST}${g}]${n}"
+    echo
+    exit 0
+fi
+
 dxnetcheck
 banner
 echo -e " ${A} ${c}Codex Initialization Started...${n}"
@@ -116,6 +158,7 @@ sleep 1.5
 cd "$HOME" || exit 1
 rm -rf CODEX
 git clone https://github.com/Alpha-Codex369/CODEX.git >/dev/null 2>&1 &
+pid=$!
 spin
 
 if [ -d "CODEX" ]; then
