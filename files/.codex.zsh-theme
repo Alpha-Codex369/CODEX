@@ -16,15 +16,40 @@ setopt PROMPT_SUBST
 bindkey '^R' reset-prompt
 
 command_not_found_handler() {
+    local random_number=$(( (RANDOM + SECONDS) % 4 ))
     local g="\033[1;92m"
     local c="\033[1;96m"
     local n="\033[0m"
+    local r="\033[1;91m"
+    local y="\033[1;93m"
 
     echo
-    echo -e "                     ${g}Headache...*${n}"
-    echo -e "${c}              (\_/)${n}"
-    echo -e "${c}              (${n}*—*${c})${n}"
-    echo -e "${c}             ⊂(___)づ${n}"
+    case $random_number in
+        0)
+            echo -e "                     ${g}Headache...*${n}"
+            echo -e "${c}                (\_/)${n}"
+            echo -e "${c}                (${n}*—*${c})${n}"
+            echo -e "${c}               ⊂(___)づ${n}"
+            ;;
+        1)
+            echo -e "                     ${r}Not found...*${n}"
+            echo -e "${c}                (\_/)${n}"
+            echo -e "${c}                (${n}ᘫ_ᘫ${c})${n}"
+            echo -e "${c}               ⊂(___)づ${n}"
+            ;;
+        2)
+            echo -e "                     ${y}Confused...*${n}"
+            echo -e "${c}                (\_/)${n}"
+            echo -e "${c}                (${n}O_O${c})${n}"
+            echo -e "${c}               ⊂(___)づ${n}"
+            ;;
+        3)
+            echo -e "                     ${c}Thinking...*${n}"
+            echo -e "${c}                (\_/)${n}"
+            echo -e "${c}                (${n}-_-${c})${n}"
+            echo -e "${c}               ⊂(___)づ${n}"
+            ;;
+    esac
     echo
 
     local c_green=$'\033[1;92m'
@@ -70,19 +95,23 @@ exit() {
         local n="\033[0m"
         
         echo
-        echo -e "                      .  ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
-        echo -e "${c}              (\_/) .${n}"
-        echo -e "${c}              (${y}-_-${c})."
-        echo -e "${c}             ⊂(___)づ${n}"
+        echo -e "                     .  ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
+        echo -e "${c}               (\_/) .${n}"
+        echo -e "${c}               (${y}-_-${c})."
+        echo -e "${c}               ⊂(___)づ${n}"
         echo
         sleep 1.5
         builtin exit
     else
+        local g="\033[32m"
+        local c="\033[36m"
+        local y="\033[33m"
+        local n="\033[0m"
         echo
-        echo -e "                      .  ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
-        echo -e "${c}              (\_/) .${n}"
-        echo -e "${c}              (${y}-_-${c})."
-        echo -e "${c}             ⊂(___)づ${n}"
+        echo -e "                     .  ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
+        echo -e "${c}               (\_/) .${n}"
+        echo -e "${c}               (${y}-_-${c})."
+        echo -e "${c}               ⊂(___)づ${n}"
         echo
         builtin exit "$@"
     fi
@@ -95,7 +124,6 @@ preexec() {
 }
 
 precmd() {
-
     if [ $timer ]; then
         now=$(date +%s)
         elapsed=$((now - timer))
