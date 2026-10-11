@@ -1,4 +1,4 @@
-#!/bin/bash¡
+#!/bin/bash
 clear
 
 r='\033[1;91m'
@@ -45,7 +45,7 @@ select_option() {
         echo -e " ${C} ${y}Restore the default terminal?${n}"
         echo -e " ${A} ${c}Use ↑ / ↓ to select, Enter to confirm.${n}"
         echo
-        echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪︎${n}"
+        echo -e " ${g}■ \e[4m${p}Select An Option\e[0m ${g}▪️︎${n}"
         echo
 
         for i in "${!options[@]}"; do
@@ -81,22 +81,28 @@ select_option() {
 
 show_spinner() {
     local pid="$1" name="$2"
-    local spinner=('█■■■■' '■█■■■' '■■█■■' '■■■█■' '■■■■█')
-    local i=0 status
+    local pos=0 dir=1 i bar
 
     while kill -0 "$pid" 2>/dev/null; do
-        printf "\r ${A} ${c}Removing %s... ${y}[%s]${n}  " \
-            "$name" "${spinner[i++ % ${#spinner[@]}]}"
-        sleep 0.15
+        bar=""
+        for ((i=0; i<10; i++)); do
+            if ((i >= pos && i < pos+3)); then bar+="${g}▰${n}"; else bar+="${c}▱${n}"; fi
+        done
+        printf '\r\033[2K %b[%bRemoving %s...%b] %b' "$g" "$n" "$name" "$g" "$bar"
+        sleep 0.1 2>/dev/null
+        ((pos+=dir))
+        if ((pos >= 7)); then dir=-1; elif ((pos <= 0)); then dir=1; fi
     done
 
-    wait "$pid"
-    status=$?
-
+    wait "$pid" 2>/dev/null
+    local status=$?
+    bar=""
     if (( status == 0 )); then
-        printf "\r ${A} ${g}%s Removed Successfully!${n}          \n" "$name"
+        for ((i=0; i<10; i++)); do bar+="${g}▰${n}"; done
+        printf '\r\033[2K %b[%bRemoving %s...%b] %b | %bRemoved Successfully!%b\n' "$g" "$n" "$name" "$g" "$bar" "$g" "$n"
     else
-        printf "\r ${E} ${r}%s removal failed!${n}          \n" "$name"
+        for ((i=0; i<10; i++)); do bar+="${c}▱${n}"; done
+        printf '\r\033[2K %b[%bRemoving %s...%b] %b | %bFAIL%b\n' "$g" "$n" "$name" "$g" "$bar" "$r" "$n"
     fi
 
     return "$status"
@@ -171,9 +177,9 @@ fi
 clear
 echo
 echo -e "                        . ${g}ᶻ 𝗓 𐰁 .ᐟ...${n}"
-echo -e "${c}              (\\/) ."
-echo -e "              (${y}--${c})."
-echo -e "             ⊂(___)づ${n}"
+echo -e "${c}              (\\/)"
+echo -e "              (${y}--${c})"
+echo -e "             ⊂(___)づ"
 echo
 echo -e " ${C} ${g}Dx-Simu ${c}is going to sleep ${SLEEP}${n}"
 echo
@@ -199,7 +205,6 @@ fi
 remove_path "$HOME/.zsh_history" "ZSH History"
 remove_path "$HOME/.oh-my-zsh" "Oh-My-Zsh"
 
-remove_path "$HOME/.toolx" "ToolX Directory"
 remove_path "$HOME/.codex" "Codex Directory"
 remove_path "$HOME/.Codex-simu" "DX-SIMU Cache"
 remove_path "$HOME/.CODEX" "CODEX System Files"
