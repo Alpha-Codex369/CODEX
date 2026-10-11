@@ -406,6 +406,7 @@ spin(){
 setup_termux_paths() {
     mkdir -p "$HOME/.codex"
     ox="$HOME/.termux"
+    mkdir -p "$ox"
     dx="$ox/font.ttf"
     simu="$ox/colors.properties"
    
@@ -427,21 +428,24 @@ setup_termux_paths() {
 }
 
 setup_linux_paths() {
+    su=""
+    [ "$(id -u)" -ne 0 ] && su="sudo"
     mkdir -p "$HOME/.codex"
     mkdir -p "$HOME/.local/share/fonts"
     cp "$HOME/CODEX/files/font.ttf" "$HOME/.local/share/fonts/"
-    fc-cache -fv >/dev/null
+    command -v fc-cache >/dev/null 2>&1 || $su apt-get install -y fontconfig >/dev/null 2>&1 </dev/null
+    command -v fc-cache >/dev/null 2>&1 && fc-cache -f >/dev/null 2>&1
    
    
-    sudo mv "$HOME/CODEX/files/chat" "/usr/local/bin/" && sudo chmod +x "/usr/local/bin/chat"
+    $su mv "$HOME/CODEX/files/chat" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/chat"
    
     mv "$HOME/CODEX/files/unstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/unstall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
     mv "$HOME/CODEX/files/dev" "$HOME/.codex/" && chmod +x "$HOME/.codex/dev"
-    sudo mv "$HOME/CODEX/files/simu" "/usr/local/bin/" && sudo chmod +x "/usr/local/bin/simu"
+    $su mv "$HOME/CODEX/files/simu" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/simu"
     mv "$HOME/CODEX/files/update" "$HOME/.codex/" && chmod +x "$HOME/.codex/update"
     mv "$HOME/CODEX/files/help" "$HOME/.codex/" && chmod +x "$HOME/.codex/help"
-    sudo mv "$HOME/CODEX/files/code" "/usr/local/bin/" && sudo chmod +x "/usr/local/bin/code"
+    $su mv "$HOME/CODEX/files/code" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/code"
 }
 
 dxnetcheck() {
