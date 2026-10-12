@@ -416,14 +416,14 @@ setup_termux_paths() {
    
     mv "$HOME/CODEX/files/chat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/chat"
    
-    mv "$HOME/CODEX/files/unistall" "$HOME/.codex/" && chmod +x "$HOME/.codex/unistall"
+    mv "$HOME/CODEX/files/uninstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/uninstall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
     mv "$HOME/CODEX/files/simu" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/simu"
     mv "$HOME/CODEX/files/dev" "$HOME/.codex/" && chmod +x "$HOME/.codex/dev"
     mv "$HOME/CODEX/files/update" "$HOME/.codex/" && chmod +x "$HOME/.codex/update"
     mv "$HOME/CODEX/files/help" "$HOME/.codex/" && chmod +x "$HOME/.codex/help"
     mv "$HOME/CODEX/files/code" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/code"
-   
+    chsh -s zsh >/dev/null 2>&1 &
     termux-reload-settings
 }
 
@@ -439,7 +439,7 @@ setup_linux_paths() {
    
     $su mv "$HOME/CODEX/files/chat" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/chat"
    
-    mv "$HOME/CODEX/files/unstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/unstall"
+    mv "$HOME/CODEX/files/uninstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/uninstall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
     mv "$HOME/CODEX/files/dev" "$HOME/.codex/" && chmod +x "$HOME/.codex/dev"
     $su mv "$HOME/CODEX/files/simu" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/simu"
