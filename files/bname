@@ -1,14 +1,20 @@
 #!/bin/bash
 clear
 
-# --- dx colors ---
 r='\033[1;91m'
-g='\033[1;92m'
+p='\033[1;95m'
 y='\033[1;93m'
-c='\033[1;96m'
+g='\033[1;92m'
 n='\033[1;0m'
+b='\033[1;94m'
+c='\033[1;96m'
 
-# Check Platform
+X='\033[1;92m[\033[1;00m⎯꯭‌𓆩\033[1;92m]\033[1;96m'
+D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
+E='\033[1;92m[\033[1;00m×\033[1;92m]\033[1;91m'
+A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
+C='\033[1;92m[\033[1;00m</>\033[1;92m]\033[92m'
+
 if [ -d "/data/data/com.termux/files/usr/" ]; then
     DIR="$HOME/.termux"
 else
@@ -17,66 +23,93 @@ fi
 
 USER_FILE="$DIR/usernames.txt"
 ZSHRC="$HOME/.zshrc"
-THEME="$HOME/.oh-my-zsh/themes/codex.zsh-theme"
 
-# Check if file exists
-if [ ! -f "$USER_FILE" ]; then
-    echo -e "\n ${r}[×] Error: CODEX is not fully configured or usernames.txt is missing.${n}"
-    exit 1
+
+if [ -f "$HOME/.oh-my-zsh/themes/codex.zsh-theme" ]; then
+    THEME="$HOME/.oh-my-zsh/themes/codex.zsh-theme"
+elif [ -f "$ZSH_CUSTOM/themes/codex.zsh-theme" ]; then
+    THEME="$ZSH_CUSTOM/themes/codex.zsh-theme"
+elif [ -f "$HOME/.oh-my-zsh/custom/themes/codex.zsh-theme" ]; then
+    THEME="$HOME/.oh-my-zsh/custom/themes/codex.zsh-theme"
+else
+    THEME="$HOME/.oh-my-zsh/themes/codex.zsh-theme"
 fi
 
-CURRENT_NAME=$(cat "$USER_FILE")
+if [ ! -f "$USER_FILE" ]; then
+    mkdir -p "$DIR"
+    extracted_name=""
+    if [ -f "$ZSHRC" ]; then
+        extracted_name=$(grep -oE 'simu -w \$width "[^"]+"' "$ZSHRC" 2>/dev/null | head -n 1 | cut -d'"' -f2)
+    fi
+    [ -z "$extracted_name" ] && extracted_name="CODEX"
+    echo "$extracted_name" > "$USER_FILE"
+fi
+
+CURRENT_NAME=$(cat "$USER_FILE" | tr -d '[:space:]')
+[ -z "$CURRENT_NAME" ] && CURRENT_NAME="CODEX"
 
 echo
 echo -e " ${c}             (\_/)"
 echo -e "              (${y}^_^${c})     ${g}Hey dear${c}"
 echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
 echo
-echo -e " [+] ${c}Current Banner Name: ${g}$CURRENT_NAME${n}"
+echo -e " ${A} ${c}Current Banner Name: ${g}$CURRENT_NAME${n}"
 echo
 
 while true; do
     read -p "$(echo -e ${g}[${n}+${g}]──[${n}Enter New Name${g}]────►${n} )" name
     echo
         
-        if [[ -z "$name" ]]; then
-            echo -e " ${E} ${r}Name cannot be empty!${c}"
-            echo
-            continue
-        fi
+    if [[ -z "$name" ]]; then
+        echo -e " ${E} ${r}Name cannot be empty!${n}"
+        echo
+        continue
+    fi
+        
+    if [[ ! "$name" =~ ^[a-zA-Z0-9[:space:]-]+$ ]]; then
+        echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use letters, numbers, hyphens & spaces only.${n}"
+        echo
+        continue
+    fi
 
-       
-        if [[ ! "$name" =~ ^[a-zA-Z0-9[:space:]-]+$ ]]; then
-            echo -e " ${E} ${r}Invalid Input! No fancy fonts or symbols.\n ${E} ${r}Use letters, numbers, hyphens & spaces only.${c}"
-            echo
-            continue
-        fi
+    name="${name^^}"
+    name="${name// /-}"
 
-        name="${name^^}"
-        name="${name// /-}"
+    len=${#name}
+    if [[ $len -ge 1 && $len -le 8 ]]; then
+        break
+    else
+        echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}$len${n}"
+        echo
+    fi
+done
 
- 
-        len=${#name}
-        if [[ $len -ge 1 && $len -le 8 ]]; then
-            break
-        else
-            echo -e " ${E} ${r}Name must be between ${g}1 and 8${r} characters.\n ${y}Current length is: ${g}$len${c}"
-            echo
-        fi
-    done
-
-# Replace the name in config files
+# fix stale config mismatch bug...¡
 if [ -f "$ZSHRC" ]; then
-    sed -i "s/$CURRENT_NAME/$name/g" "$ZSHRC"
+    sed -i "s/simu -w \\\$width \"[^\"]*\"/simu -w \\\$width \"$name\"/g" "$ZSHRC"
 fi
+
 
 if [ -f "$THEME" ]; then
-    sed -i "s/$CURRENT_NAME/$name/g" "$THEME"
+    chmod +w "$THEME" 2>/dev/null
+    
+    
+    sed -i 's/%{§/%{%/g' "$THEME"
+    sed -i 's/§fg_bold/%{\$fg_bold/g' "$THEME"
+
+    # Force direct text replacement for bug¡ 
+    awk -v new="$name" '{
+        if ($0 ~ /fg_bold\[green\]/) {
+            # Matches anything inside brackets next to green tag and forces new name update
+            sub(/%\{\$fg_bold\[green\]%\}[A-Z0-9_-]+/, "%{$fg_bold[green]%}" new)
+        }
+        print
+    }' "$THEME" > "${THEME}.tmp" && cat "${THEME}.tmp" > "$THEME" && rm -f "${THEME}.tmp"
 fi
 
-# Update the record
+
 echo "$name" > "$USER_FILE"
 
-echo -e " ${g}[+] Banner name successfully changed to: $name${n}"
-echo -e " ${y}[!] Type 'clear' or restart your terminal to see the changes.${n}"
+echo -e " ${D} ${g}Banner name successfully changed to: ${c}$name${n}"
+echo -e " ${C} ${y}Type 'clear' to see your new banner instantly!${n}"
 echo
