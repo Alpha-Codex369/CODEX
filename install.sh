@@ -524,7 +524,6 @@ donotchange() {
         fi
     done
 
-   
     if [ -d "/data/data/com.termux/files/usr/" ]; then
         _P="${PREFIX:-/data/data/com.termux/files/usr}"
         for _f in motd motd.sh; do
@@ -533,9 +532,11 @@ donotchange() {
         D1="$HOME/.termux"
     else
         D1="$HOME/.CODEX"
-        mkdir -p "$D1"
     fi
    
+    
+    mkdir -p "$D1"
+
     USERNAME_FILE="$D1/usernames.txt"
     INPUT_FILE="$HOME/CODEX/files/.zshrc"
     THEME_INPUT="$HOME/CODEX/files/.codex.zsh-theme"
@@ -548,6 +549,10 @@ donotchange() {
  
     if [[ $? -eq 0 ]]; then
         mv "$TEMP_FILE" "$OUTPUT_ZSHRC"
+        
+        
+        echo "$name" > "$USERNAME_FILE"
+        
         clear
         echo
         echo
