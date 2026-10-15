@@ -226,7 +226,7 @@ draw_dashboard() {
 
     PUT 4 1
     if command -v simu >/dev/null 2>&1; then
-        simu -w $width "DX-SIMU" | lolcat -f 2>/dev/null || simu -w $width "DX-SIMU"
+        simu -w $width "DX-SIMU" | codecat 2>/dev/null || simu -w $width "DX-SIMU"
     fi
 
     PUT 2 1
