@@ -415,6 +415,7 @@ setup_termux_paths() {
    
    
     mv "$HOME/CODEX/files/chat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/chat"
+    mv "$HOME/CODEX/files/codecat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/codecat"
    
     mv "$HOME/CODEX/files/uninstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/uninstall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
@@ -438,6 +439,7 @@ setup_linux_paths() {
    
    
     $su mv "$HOME/CODEX/files/chat" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/chat"
+    $su mv "$HOME/CODEX/files/codecat" "/usr/local/bin/" && $su chmod +x "/usr/local/bin/codecat"
    
     mv "$HOME/CODEX/files/uninstall" "$HOME/.codex/" && chmod +x "$HOME/.codex/uninstall"
     mv "$HOME/CODEX/files/bname" "$HOME/.codex/" && chmod +x "$HOME/.codex/bname"
