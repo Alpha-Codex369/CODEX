@@ -643,9 +643,7 @@ setupx() {
     done
 
     hash -r
-    command -v lolcat >/dev/null 2>&1 || spin "lolcat"
-    hash -r
-    command -v lolcat >/dev/null 2>&1 || FAILED+=("lolcat")
+    
 
     mkdir -p "$HOME/.codex"
 
