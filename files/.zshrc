@@ -39,7 +39,7 @@ alias ls='lsd -l --blocks size,name --color always'
 alias lt='lsd --tree --blocks size,name --color always --icon always'
 fi
 
-[ -f "$CODEX_DIR/unistall" ] && alias unstall="$CODEX_DIR/unistall"
+[ -f "$CODEX_DIR/unistall" ] && alias unistall="$CODEX_DIR/unistall"
 [ -f "$CODEX_DIR/dev" ] && alias dev="$CODEX_DIR/dev"
 [ -f "$CODEX_DIR/dev" ] && alias report="$CODEX_DIR/dev"
 [ -f "$CODEX_DIR/update" ] && alias update="$CODEX_DIR/update"
@@ -48,11 +48,11 @@ fi
 
 r='\033[91m'
 p='\033[1;95m'
-y='\033[93m'
-g='\033[92m'
+y='\033[1;93m'
+g='\033[1;92m'
 n='\033[0m'
-b='\033[94m'
-c='\033[96m'
+b='\033[1;94m'
+c='\033[1;96m'
 
 X='\033[1;92m[\033[1;00m⎯꯭̽𓆩\033[1;92m]\033[1;96m'
 D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
@@ -86,9 +86,9 @@ check_disk_usage() {
     if [ -z "$disk_usage" ]; then disk_usage=0; fi
 
     if [ "$disk_usage" -ge "$threshold" ]; then
-        echo -e " ${g}[${n}\uf0a0${g}] ${r}WARN: ${c}Disk Full ${g}${disk_usage}% ${c}| ${c}U${g}${used_size} ${c}of ${c}T${g}${total_size}"
+        echo -e " ${g}[${n}${g}] ${r}WARN: ${c}Disk Full ${g}${disk_usage}% ${c}| ${c}U${g}${used_size} ${c}of ${c}T${g}${total_size}"
     else
-        echo -e " ${g}[${n}\uf0e7${g}] ${c}Disk usage: ${g}${disk_usage}% ${c}| ${c}U${g}${used_size} ${c}of ${c}T${g}${total_size}"
+        echo -e " ${g}[${n}${g}] ${c}Disk usage: ${g}${disk_usage}% ${c}| ${c}U${g}${used_size} ${c}of ${c}T${g}${total_size}"
     fi
 }
 
@@ -251,7 +251,7 @@ draw_dashboard() {
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
     PUT 10 ${var4}
-    echo -e "\e[32m[\e[0m\uf489\e[32m] \e[36mCODEX \e[36m1.6\e[0m"
+    echo -e "\e[1;32m[\e[0m\uf489\e[1;32m] \e[1;36mCODEX \e[1;36m1.6\e[0m"
 
     PUT 12 1
     local ads1=""
