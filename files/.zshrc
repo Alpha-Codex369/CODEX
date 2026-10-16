@@ -1,5 +1,10 @@
 ZSH_THEME="codex"
 
+export TERM="xterm-256color"
+export COLORTERM="truecolor"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 if [ -d "/data/data/com.termux/files/usr/" ]; then
     export ZSH=$HOME/.oh-my-zsh
     CODEX_DIR="$HOME/.codex"
@@ -186,7 +191,7 @@ PUT() { echo -en "\033[${1};${2}H"; }
 DRAW() { echo -en "\033%"; echo -en "\033(0"; }
 WRITE() { echo -en "\033(B"; }
 HIDECURSOR() { echo -en "\033[?25l"; }
-NORM() { echo -en "\033[?12l\033[?25h"; }
+NORM() { printf "\033(B\033[?12l\033[?25h"; }
 
 draw_dashboard() {
     local data=$(check_disk_usage)
@@ -225,8 +230,13 @@ draw_dashboard() {
     echo -e "\033[36;1m╚${var2}╝\033[0m"
 
     PUT 4 1
+
     if command -v simu >/dev/null 2>&1; then
-        simu -w $width "DX-SIMU" | codecat 2>/dev/null || simu -w $width "DX-SIMU"
+        if command -v codecat >/dev/null 2>&1; then
+            simu -w $width "DX-SIMU" | python3 "$(command -v codecat)" 2>/dev/null || simu -w $width "DX-SIMU" | codecat -random 2>/dev/null || simu -w $width "DX-SIMU"
+        else
+            simu -w $width "DX-SIMU"
+        fi
     fi
 
     PUT 2 1
