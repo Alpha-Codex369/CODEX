@@ -281,7 +281,7 @@ smart_clear() {
 }
 alias clear='smart_clear'
 
-udp
+udp &!
 HIDECURSOR
 load
 command clear
