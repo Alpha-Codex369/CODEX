@@ -48,12 +48,6 @@ sudo apt update -y && sudo apt upgrade -y && for p in curl git ncurses-utils jq 
 ```
 ---
 
-## 🧩 FANCY BANNER
-
-```bash
-[ -d /data/data/com.termux ] && { pkg install ruby -y && gem install lolcat; } || { sudo apt update && sudo apt install ruby -y && sudo gem install lolcat; }
-```
----
 
 ## ✨️ HELP MENU
 
