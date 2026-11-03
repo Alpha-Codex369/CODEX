@@ -39,7 +39,7 @@ alias ls='lsd -l --blocks size,name --color always'
 alias lt='lsd --tree --blocks size,name --color always --icon always'
 fi
 
-[ -f "$CODEX_DIR/unistall" ] && alias unistall="$CODEX_DIR/unistall"
+[ -f "$CODEX_DIR/uninstall" ] && alias uninstall="$CODEX_DIR/uninstall"
 [ -f "$CODEX_DIR/dev" ] && alias dev="$CODEX_DIR/dev"
 [ -f "$CODEX_DIR/dev" ] && alias report="$CODEX_DIR/dev"
 [ -f "$CODEX_DIR/update" ] && alias update="$CODEX_DIR/update"
