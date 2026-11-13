@@ -41,7 +41,7 @@ fi
 
 [ -f "$CODEX_DIR/uninstall" ] && alias uninstall="$CODEX_DIR/uninstall"
 [ -f "$CODEX_DIR/dev" ] && alias dev="$CODEX_DIR/dev"
-[ -f "$CODEX_DIR/codex" ] && alias dev="$CODEX_DIR/codex"
+[ -f "$CODEX_DIR/codex" ] && alias codex="$CODEX_DIR/codex"
 [ -f "$CODEX_DIR/dev" ] && alias report="$CODEX_DIR/dev"
 [ -f "$CODEX_DIR/update" ] && alias update="$CODEX_DIR/update"
 [ -f "$CODEX_DIR/bname" ] && alias bname="$CODEX_DIR/bname"
