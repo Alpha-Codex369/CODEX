@@ -18,6 +18,8 @@ fi
 mkdir -p "$HOME/.CODEX"
 mkdir -p "$HOME/.Codex-simu"
 mkdir -p "$HOME/.codex"
+mkdir -p "$HOME/.codex/def"
+mkdir -p "$HOME/.codex/art"
 # dx colors
 r='\033[1;91m'
 p='\033[1;95m'
