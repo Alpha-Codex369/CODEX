@@ -1,0 +1,503 @@
+#!/bin/bash
+
+export THRESHOLD=100
+export TERMINAL="\ue7a2"
+export PKGS="\uf8d6"
+export CAL="\uf073"
+
+r='\033[91m'
+p='\033[1;95m'
+y='\033[1;93m'
+g='\033[1;92m'
+n='\033[0m'
+b='\033[1;94m'
+c='\033[1;96m'
+D='\033[1;92m[\033[1;00m〄\033[1;92m]\033[1;93m'
+A='\033[1;92m[\033[1;00m+\033[1;92m]\033[1;92m'
+
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    icon="〄"
+    export D1="$HOME/.termux"
+else
+    icon="ଲ"
+    export D1="$HOME/.CODEX"
+fi
+
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    DIR="$HOME/.termux"
+else
+    DIR="$HOME/.CODEX"
+fi
+
+USERNAME_FILE="$DIR/usernames.txt"
+
+if [ -f "$USERNAME_FILE" ]; then
+    username=$(cat "$USERNAME_FILE")
+fi
+
+spin() {
+    local label="$1"
+    local pos=0 dir=1 i bar
+    while kill -0 "$pid" 2>/dev/null; do
+        bar=""
+        for ((i=0; i<10; i++)); do
+            if ((i >= pos && i < pos+3)); then bar+="${g}▰${n}"; else bar+="${c}▱${n}"; fi
+        done
+        printf '\r\033[2K %b[%b%s%b] %b' "$g" "$n" "$label" "$g" "$bar"
+        sleep 0.1 2>/dev/null
+        ((pos+=dir))
+        if ((pos >= 7)); then dir=-1; elif ((pos <= 0)); then dir=1; fi
+    done
+    wait "$pid" 2>/dev/null
+    local rc=$?
+    bar=""
+    if ((rc == 0)); then
+        for ((i=0; i<10; i++)); do bar+="${g}▰${n}"; done
+        printf '\r\033[2K %b[%b%s%b] %b | %bDone%b\n' "$g" "$n" "$label" "$g" "$bar" "$g" "$n"
+    else
+        for ((i=0; i<10; i++)); do bar+="${c}▱${n}"; done
+        printf '\r\033[2K %b[%b%s%b] %b | %bFAIL%b\n' "$g" "$n" "$label" "$g" "$bar" "$r" "$n"
+        exit 1
+    fi
+}
+
+if [ ! -d "$HOME/.codex/fonts" ] || [ ! -d "$HOME/.codex/colors" ]; then
+    echo -e "${y}Installing Fonts & Colors...${n}"
+    mkdir -p "$HOME/.codex" && cd "$HOME/.codex" || exit
+
+    repo_url="https://github.com/adi1090x/termux-style/archive/refs/heads/master.tar.gz"
+    curl -sO -L "$repo_url" &
+    pid=$!
+    spin "Fetching Core Data File"
+
+    tar -xzf master.tar.gz && rm master.tar.gz
+    rm -rf colors fonts
+    mkdir -p colors fonts
+    cp -r termux-style-master/colors/* colors/ 2>/dev/null
+    cp -r termux-style-master/fonts/* fonts/ 2>/dev/null
+    rm -rf termux-style-master
+
+    fonts_count=0
+    fonts_size="0 KB"
+    colors_count=0
+    colors_size="0 KB"
+
+    show_files() {
+        local type="$1"
+        local count=0
+
+        echo -e "\n${y}Processing $type...${n}"
+        for file in "$type"/*; do
+            [ -e "$file" ] || continue
+            local filename="${file##*/}"
+            local name_without_ext="${filename%.*}"
+
+            local fsize=$(du -sk "$file" 2>/dev/null | awk '{if ($1 >= 1024) printf "%.2f MB", $1/1024; else print $1" KB";}')
+            [[ -z "$fsize" ]] && fsize="0 KB"
+
+            local bar=""
+            for ((i=0; i<10; i++)); do bar+="${g}▰${n}"; done
+            local label="Install: $name_without_ext"
+            printf '%b[%b%s%b] %b | %bDone%b [%b%s%b]\n' "$g" "$n" "$label" "$g" "$bar" "$g" "$n" "$y" "$fsize" "$n"
+
+            count=$((count+1))
+            sleep 0.01
+        done
+
+        local total_size=$(du -sk "$type" | awk '{if ($1 >= 1024) printf "%.2f MB", $1/1024; else print $1" KB";}')
+        if [ "$type" == "fonts" ]; then
+            fonts_count=$count
+            fonts_size=$total_size
+        elif [ "$type" == "colors" ]; then
+            colors_count=$count
+            colors_size=$total_size
+        fi
+    }
+
+    show_files "fonts"
+    show_files "colors"
+
+    echo -e "\n${g}${g}[${n}${g}] ${c}All font & color installed successfully.${n}"
+    echo -e "${g}[${n}${g}] ${c}Total Font '${g}${fonts_count}${c}' Folder Size: ${g}${fonts_size}${n}"
+    echo -e "${g}[${n}${g}] ${c}Total Color '${g}${colors_count}${c}' Folder Size: ${g}${colors_size}${n}\n"
+    sleep 3
+fi
+
+TMP_DASH="$HOME/.codex/tmp_dash.sh"
+> "$TMP_DASH"
+awk '/^check_disk_usage\(\) \{/{flag=1} flag; /^draw_dashboard\(\) \{/{flag=2} flag==2 && /^}/{flag=0; exit}' "$HOME/.zshrc" > "$TMP_DASH" 2>/dev/null
+source "$TMP_DASH" 2>/dev/null
+
+exit_script() {
+    rm -f "$TMP_DASH" 2>/dev/null
+    printf "\033(B\033[?12l\033[?25h" 2>/dev/null
+    command clear
+    echo
+    echo -e "${c}              (\_/)"
+    echo -e "              (${y}^_^${c})     ${A} ${g}Hey dear${c} ${username}"
+    echo -e "             ⊂(___)づ  ⋅˚₊‧ ଳ ‧₊˚ ⋅"
+    echo
+    echo -e " ${A} ${c}Exiting ${g}CODEX\033[1;36m"
+    echo
+    exit 0
+}
+trap exit_script SIGINT SIGTSTP
+
+if [ -d "/data/data/com.termux/files/usr/" ]; then
+    IS_TERMUX=1
+else
+    IS_TERMUX=0
+fi
+
+fontcount=$(ls -1 "$HOME/.codex/fonts" 2>/dev/null | wc -l)
+colorcount=$(ls -1 "$HOME/.codex/colors" 2>/dev/null | wc -l)
+
+font_menu=("Back")
+for f in "$HOME/.codex/fonts"/*; do [ -e "$f" ] && font_menu+=("$(basename "$f")"); done
+font_menu+=("Back")
+
+color_menu=("Back")
+for cl in "$HOME/.codex/colors"/*; do [ -e "$cl" ] && color_menu+=("$(basename "$cl")"); done
+color_menu+=("Back")
+
+border_menu=("Back" "Default" "Single" "Rounded" "Thick" "DoubleDash" "Block" "Plus" "Star" "Hash" "Dot" "Back")
+
+art_menu=("Back")
+if [ -d "$HOME/.codex/art" ]; then
+    for a in "$HOME/.codex/art"/*; do [ -e "$a" ] && art_menu+=("$(basename "$a")"); done
+fi
+art_menu+=("Back")
+
+if [ "$IS_TERMUX" -eq 1 ]; then
+    default_menu=("Back" "Font" "Color" "Border" "Back")
+    main_options=("Font [${fontcount}]" "Color [${colorcount}]" "Border" "Art" "Default" "About" "Exit")
+else
+    default_menu=("Back" "Font" "Border" "Back")
+    main_options=("Font [${fontcount}]" "Border" "Art" "Default" "About" "Exit")
+fi
+
+STATE="MAIN"
+selected=0
+num_buffer=""
+
+apply_border() {
+    local b="$1"
+    local TL="╔" TR="╗" H="═" V="║" BL="╚" BR="╝"
+    case "$b" in
+        "Default") TL="╔"; H="═"; TR="╗"; V="║"; BL="╚"; BR="╝" ;;
+        "Single") TL="┌"; H="─"; TR="┐"; V="│"; BL="└"; BR="┘" ;;
+        "Rounded") TL="╭"; H="─"; TR="╮"; V="│"; BL="╰"; BR="╯" ;;
+        "Thick") TL="┏"; H="━"; TR="┓"; V="┃"; BL="┗"; BR="┛" ;;
+        "DoubleDash") TL="┏"; H="╍"; TR="┓"; V="╏"; BL="┗"; BR="┛" ;;
+        "Block") TL="█"; H="█"; TR="█"; V="█"; BL="█"; BR="█" ;;
+        "Plus") TL="+"; H="-"; TR="+"; V="|"; BL="+"; BR="+" ;;
+        "Star") TL="*"; H="*"; TR="*"; V="*"; BL="*"; BR="*" ;;
+        "Hash") TL="#"; H="#"; TR="#"; V="#"; BL="#"; BR="#" ;;
+        "Dot") TL="⡄"; H="⠤"; TR="⢠"; V="⡇"; BL="⠢"; BR="⠔" ;;
+    esac
+    
+    awk -v h="$H" '/local var2=\$\(printf/ { sub(/printf \047.*%\.0s\047/, "printf \047" h "%.0s\047"); print; next } 1' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+    
+    awk -v tl="$TL" -v tr="$TR" '/PUT 2 1/ { print; getline; sub(/".*"/, "\"\\033[36;1m" tl "${var2}" tr "\\033[0m\""); print; next } 1' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+    
+    awk -v bl="$BL" -v br="$BR" '/PUT 11 1/ { print; getline; sub(/".*"/, "\"\\033[36;1m" bl "${var2}" br "\\033[0m\""); print; next } 1' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+    
+    awk -v v="$V" '
+    /PUT \$i \$width/ { print; getline; sub(/".*"/, "\"\\033[36;1m" v "\\033[0m\""); print; next }
+    /PUT \$i 1/ {
+        print; getline;
+        if ($0 ~ /\$\{var3\}/) {
+            sub(/".*"/, "\"\\033[36;1m" v "${var3}" v "\\033[0m\"")
+        } else {
+            sub(/".*"/, "\"\\033[36;1m" v "\\033[0m\"")
+        }
+        print; next
+    }
+    1' "$HOME/.zshrc" > "$HOME/.zshrc.tmp" && mv "$HOME/.zshrc.tmp" "$HOME/.zshrc"
+}
+
+apply_live() {
+    local type="$1"
+    local val="$2"
+    if [ "$val" == "Back" ]; then return; fi
+
+    if [ "$type" == "font" ]; then
+        if [ "$IS_TERMUX" -eq 1 ]; then
+            cp -f "$HOME/.codex/fonts/$val" ~/.termux/font.ttf 2>/dev/null
+            echo "$val" > ~/.termux/.current_font
+            am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null 2>&1
+        fi
+    elif [ "$type" == "color" ]; then
+        if [ "$IS_TERMUX" -eq 1 ]; then
+            cp -f "$HOME/.codex/colors/$val" ~/.termux/colors.properties 2>/dev/null
+            echo "$val" > ~/.termux/.current_color
+            am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null 2>&1
+        fi
+    elif [ "$type" == "border" ]; then
+        apply_border "$val"
+    elif [ "$type" == "art" ]; then
+        local SIMU_PATH=$(command -v simu)
+        if [ -z "$SIMU_PATH" ]; then
+            if [ "$IS_TERMUX" -eq 1 ]; then
+                SIMU_PATH="/data/data/com.termux/files/usr/bin/simu"
+            else
+                SIMU_PATH="/usr/bin/simu"
+            fi
+        fi
+        cp -f "$HOME/.codex/art/$val" "$SIMU_PATH" 2>/dev/null
+        chmod +x "$SIMU_PATH" 2>/dev/null
+    elif [ "$type" == "default" ]; then
+        if [ "$val" == "Font" ]; then
+            if [ "$IS_TERMUX" -eq 1 ]; then
+                cp -f "$HOME/.codex/def/font.ttf" ~/.termux/font.ttf 2>/dev/null
+                echo "Default" > ~/.termux/.current_font
+                am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null 2>&1
+            fi
+        elif [ "$val" == "Color" ]; then
+            if [ "$IS_TERMUX" -eq 1 ]; then
+                cp -f "$HOME/.codex/def/colors.properties" ~/.termux/colors.properties 2>/dev/null
+                echo "Default" > ~/.termux/.current_color
+                am broadcast --user 0 -a com.termux.app.reload_style com.termux > /dev/null 2>&1
+            fi
+        elif [ "$val" == "Border" ]; then
+            apply_border "Default"
+        fi
+    fi
+
+    sleep 0.2
+    command clear
+    
+    TMP_DASH="$HOME/.codex/tmp_dash.sh"
+    > "$TMP_DASH"
+    awk '/^check_disk_usage\(\) \{/{flag=1} flag; /^draw_dashboard\(\) \{/{flag=2} flag==2 && /^}/{flag=0; exit}' "$HOME/.zshrc" > "$TMP_DASH" 2>/dev/null
+    source "$TMP_DASH" 2>/dev/null
+    
+    if type draw_dashboard >/dev/null 2>&1; then
+        draw_dashboard
+    fi
+}
+
+command clear
+if type draw_dashboard >/dev/null 2>&1; then
+    draw_dashboard
+fi
+
+# 4. Fast Menu Display
+display_menu() {
+    echo -en "\033[15;1H\033[0J"
+
+    if [ "$STATE" == "MAIN" ]; then
+        echo -e " ${g}[${n}${g}]  \e[4m${p}Select An Option\e[0m ${g}▪${n}"
+        echo
+
+        active_font=$(cat ~/.termux/.current_font 2>/dev/null)
+        active_color=$(cat ~/.termux/.current_color 2>/dev/null)
+
+        for i in "${!main_options[@]}"; do
+            local opt_text="${main_options[$i]}"
+
+            if [[ "$opt_text" == Font* ]] && [ -n "$active_font" ]; then
+                opt_text="$opt_text ${c}(${active_font%.*})${n}"
+            elif [[ "$opt_text" == Color* ]] && [ -n "$active_color" ]; then
+                opt_text="$opt_text ${c}(${active_color%.*})${n}"
+            fi
+
+            if [ $i -eq $selected ]; then
+                echo -e " ${g}${g}[${n}${g}] ${c}${opt_text} ${g}[${n}${g}] ${n}"
+            else
+                echo -e "     ${opt_text}"
+            fi
+        done
+
+    elif [ "$STATE" == "ABOUT" ]; then
+        echo -e " ${g}[${n}</>${g}]  \e[4m${p}About CODEX\e[0m ${g}▪${n}"
+        echo
+        echo -e "     ${c}Developer: ${g}Dx-Codex"
+        echo -e "     ${c}Version:   ${g}1.6"
+        echo -e "     ${c}Telegram:  ${g}t.me/Termuxcodex"
+        echo
+        echo -e " ${g}[${n}${g}] ${c}[0] Back ${g}[${n}${g}] ${n}"
+
+    elif [ "$STATE" == "FONT" ] || [ "$STATE" == "COLOR" ] || [ "$STATE" == "BORDER" ] || [ "$STATE" == "ART" ] || [ "$STATE" == "DEFAULT" ]; then
+        local header="Select Font"
+        local menu_arr=("${font_menu[@]}")
+        if [ "$STATE" == "COLOR" ]; then
+            header="Select Color"
+            menu_arr=("${color_menu[@]}")
+        elif [ "$STATE" == "BORDER" ]; then
+            header="Select Border"
+            menu_arr=("${border_menu[@]}")
+        elif [ "$STATE" == "ART" ]; then
+            header="Select Art"
+            menu_arr=("${art_menu[@]}")
+        elif [ "$STATE" == "DEFAULT" ]; then
+            header="Select Default"
+            menu_arr=("${default_menu[@]}")
+        fi
+
+        echo -e " ${g}■ \e[4m${p}${header}\e[0m ${g}▪${n}"
+        echo
+
+        local limit=10
+        local start=0
+
+        if [ ${#menu_arr[@]} -gt $limit ]; then
+            start=$((selected - 4))
+            if [ $start -lt 0 ]; then start=0; fi
+            if [ $((start + limit)) -gt ${#menu_arr[@]} ]; then
+                start=$((${#menu_arr[@]} - limit))
+            fi
+        fi
+
+        local end=$((start + limit))
+
+        for ((i=start; i<end; i++)); do
+            local disp="${menu_arr[$i]}"
+            if [ "$disp" == "Back" ]; then
+                disp="[${i}] Back"
+            else
+                disp="[${i}] ${disp%.*}" 
+            fi
+
+            if [ $i -eq $selected ]; then
+                echo -e " ${g}[${n}${g}] ${c}${disp} ${g}[${n}${g}] ${n}"
+            else
+                echo -e "     ${disp}"
+            fi
+        done
+
+        echo
+        if [ -n "$num_buffer" ]; then
+            echo -e " ${g}[${n}${g}] ${y}Jump to: ${g}${num_buffer} ${c}[Press Enter/Right to Apply]${n}"
+        else
+            echo -e " ${g}[${n}${g}] ${c}Type a number to jump instantly${n}"
+        fi
+    fi
+}
+
+echo -en "\033[?25l" 
+while true; do
+    display_menu
+    read -rsn1 input
+    if [[ "$input" == $'\x1b' || "$input" == $'\e' ]]; then
+        read -rsn2 -t 0.05 input2
+        input+="$input2"
+    fi
+
+    if [[ "$input" =~ ^[0-9]$ ]]; then
+        if [ "$STATE" == "ABOUT" ] && [ "$input" -eq 0 ]; then
+            num_buffer=""
+            STATE="MAIN"
+            selected=0
+            continue
+        fi
+        
+        num_buffer+="$input"
+        local idx=$num_buffer
+        if [ "$STATE" == "FONT" ]; then
+            if [ $idx -ge 0 ] && [ $idx -lt ${#font_menu[@]} ]; then selected=$idx; fi
+        elif [ "$STATE" == "COLOR" ]; then
+            if [ $idx -ge 0 ] && [ $idx -lt ${#color_menu[@]} ]; then selected=$idx; fi
+        elif [ "$STATE" == "BORDER" ]; then
+            if [ $idx -ge 0 ] && [ $idx -lt ${#border_menu[@]} ]; then selected=$idx; fi
+        elif [ "$STATE" == "ART" ]; then
+            if [ $idx -ge 0 ] && [ $idx -lt ${#art_menu[@]} ]; then selected=$idx; fi
+        elif [ "$STATE" == "DEFAULT" ]; then
+            if [ $idx -ge 0 ] && [ $idx -lt ${#default_menu[@]} ]; then selected=$idx; fi
+        fi
+        continue
+    fi
+
+    case "$input" in
+        $'\x1b[D' | $'\e[D')
+            num_buffer=""
+            if [ "$STATE" != "MAIN" ]; then
+                STATE="MAIN"
+                selected=0
+            fi
+            ;;
+
+        $'\x1b[C' | $'\e[C' | "")
+            num_buffer=""
+            if [ "$STATE" == "MAIN" ]; then
+                sel_opt="${main_options[$selected]}"
+                if [[ "$sel_opt" == Font* ]]; then STATE="FONT"; selected=0;
+                elif [[ "$sel_opt" == Color* ]]; then STATE="COLOR"; selected=0;
+                elif [[ "$sel_opt" == Border* ]]; then STATE="BORDER"; selected=0;
+                elif [[ "$sel_opt" == Art* ]]; then STATE="ART"; selected=0;
+                elif [[ "$sel_opt" == Default* ]]; then STATE="DEFAULT"; selected=0;
+                elif [[ "$sel_opt" == About* ]]; then STATE="ABOUT"; selected=0;
+                elif [[ "$sel_opt" == Exit* ]]; then exit_script;
+                fi
+            elif [ "$STATE" == "FONT" ]; then
+                if [ "${font_menu[$selected]}" == "Back" ]; then
+                    STATE="MAIN"; selected=0
+                else
+                    apply_live "font" "${font_menu[$selected]}"
+                fi
+            elif [ "$STATE" == "COLOR" ]; then
+                if [ "${color_menu[$selected]}" == "Back" ]; then
+                    STATE="MAIN"; selected=0
+                else
+                    apply_live "color" "${color_menu[$selected]}"
+                fi
+            elif [ "$STATE" == "BORDER" ]; then
+                if [ "${border_menu[$selected]}" == "Back" ]; then
+                    STATE="MAIN"; selected=0
+                else
+                    apply_live "border" "${border_menu[$selected]}"
+                fi
+            elif [ "$STATE" == "ART" ]; then
+                if [ "${art_menu[$selected]}" == "Back" ]; then
+                    STATE="MAIN"; selected=0
+                else
+                    apply_live "art" "${art_menu[$selected]}"
+                fi
+            elif [ "$STATE" == "DEFAULT" ]; then
+                if [ "${default_menu[$selected]}" == "Back" ]; then
+                    STATE="MAIN"; selected=0
+                else
+                    apply_live "default" "${default_menu[$selected]}"
+                fi
+            elif [ "$STATE" == "ABOUT" ]; then
+                STATE="MAIN"; selected=0
+            fi
+            ;;
+
+        $'\x1b[A' | $'\e[A')
+            num_buffer=""
+            selected=$((selected - 1))
+            if [ "$STATE" == "MAIN" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#main_options[@]} - 1)); fi
+            elif [ "$STATE" == "FONT" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#font_menu[@]} - 1)); fi
+            elif [ "$STATE" == "COLOR" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#color_menu[@]} - 1)); fi
+            elif [ "$STATE" == "BORDER" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#border_menu[@]} - 1)); fi
+            elif [ "$STATE" == "ART" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#art_menu[@]} - 1)); fi
+            elif [ "$STATE" == "DEFAULT" ]; then
+                if [ $selected -lt 0 ]; then selected=$((${#default_menu[@]} - 1)); fi
+            fi
+            ;;
+
+        $'\x1b[B' | $'\e[B')
+            num_buffer=""
+            selected=$((selected + 1))
+            if [ "$STATE" == "MAIN" ]; then
+                if [ $selected -ge ${#main_options[@]} ]; then selected=0; fi
+            elif [ "$STATE" == "FONT" ]; then
+                if [ $selected -ge ${#font_menu[@]} ]; then selected=0; fi
+            elif [ "$STATE" == "COLOR" ]; then
+                if [ $selected -ge ${#color_menu[@]} ]; then selected=0; fi
+            elif [ "$STATE" == "BORDER" ]; then
+                if [ $selected -ge ${#border_menu[@]} ]; then selected=0; fi
+            elif [ "$STATE" == "ART" ]; then
+                if [ $selected -ge ${#art_menu[@]} ]; then selected=0; fi
+            elif [ "$STATE" == "DEFAULT" ]; then
+                if [ $selected -ge ${#default_menu[@]} ]; then selected=0; fi
+            fi
+            ;;
+    esac
+done
