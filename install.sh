@@ -415,7 +415,18 @@ setup_termux_paths() {
     [ ! -f "$dx" ] && cp "$HOME/CODEX/files/font.ttf" "$ox"
     [ ! -f "$simu" ] && cp "$HOME/CODEX/files/colors.properties" "$ox"
    
-   
+    # def & art
+    mkdir -p "$HOME/.codex/def"
+    mkdir -p "$HOME/.codex/art"
+    def="$HOME/.codex/def"
+    art="$HOME/.codex/art"
+    
+    [ ! -f "$def" ] && cp "$HOME/CODEX/files/font.ttf" "$def"
+    [ ! -f "$def" ] && cp "$HOME/CODEX/files/colors.properties" "$def"
+    
+    [ ! -f "$art" ] && cp "$HOME/CODEX/files/art/art1" "$art"
+    [ ! -f "$art" ] && cp "$HOME/CODEX/files/art/art2" "$art"
+    
     mv "$HOME/CODEX/files/chat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/chat"
     mv "$HOME/CODEX/files/codecat" "$PREFIX/bin/" && chmod +x "$PREFIX/bin/codecat"
    
@@ -431,6 +442,18 @@ setup_termux_paths() {
 }
 
 setup_linux_paths() {
+
+    # def & art
+    mkdir -p "$HOME/.codex/def"
+    mkdir -p "$HOME/.codex/art"
+    def1="$HOME/.codex/def"
+    art1="$HOME/.codex/art"
+    
+    [ ! -f "$def1" ] && cp "$HOME/CODEX/files/font.ttf" "$def1"
+    
+    [ ! -f "$art1" ] && cp "$HOME/CODEX/files/art/art1" "$art1"
+    [ ! -f "$art1" ] && cp "$HOME/CODEX/files/art/art2" "$art1"
+
     su=""
     [ "$(id -u)" -ne 0 ] && su="sudo"
     mkdir -p "$HOME/.codex"
