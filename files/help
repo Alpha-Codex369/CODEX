@@ -111,6 +111,7 @@ echo
 # Command/Alias List
 echo -e "${b}╭═════❂ ${g}${aHELL} ᴄᴏᴍᴍᴀɴᴅ ${b}❂═════⊷"
 echo -e "${b}┃ ${p}❏ ${g}help       ${p}[ᴄᴏᴅᴇx ʜᴇʟᴘ ᴍᴇɴᴜ]"
+echo -e "${b}┃ ${p}❏ ${g}codex      ${p}[ᴄʜᴀɴɢᴇ ᴅᴇꜱɪɢɴ]"
 echo -e "${b}┃ ${p}❏ ${g}bname      ${p}[ᴄʜᴀɴɢᴇ ʙᴀɴɴᴇʀ ɴᴀᴍᴇ]"
 echo -e "${b}┃ ${p}❏ ${g}unistall    ${p}[ᴜɴɪɴꜱᴛᴀʟʟ ꜱᴄʀɪᴘᴛ/ᴛᴏᴏʟꜱ]"
 echo -e "${b}┃ ${p}❏ ${g}chat       ${p}[ᴄᴏᴅᴇx ɢʟᴏʙᴀʟ ᴄʜᴀᴛ]"
